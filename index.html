@@ -568,7 +568,7 @@ function configsFor(modelKey){
 }
 
 // extras: shown after size selection, tick to add
-function extrasFor(modelKey, sizeKey){
+function extrasFor(categoryKey, modelKey, sizeKey){
   // Keep it simple for Americans: few groups, clear labels
   const common = [
     { id:"pump", label:"Automatic air pump", hint:"Recommended for faster setup", price:{ EUR: 1150, USD: 1150 } },
@@ -630,9 +630,11 @@ function extrasFor(modelKey, sizeKey){
     ]});
   }
 
-  // motorsport category items
-  if (["square_ms","era6060","square"].includes(modelKey)){
-    groups.push({ name:"Motorsport extras", items: motorsport });
+  // Motorsports extras ONLY in Motorsport category
+if (categoryKey === "motorsport" && ["square_ms","era6060"].includes(modelKey)) {
+  groups.push({ name:"Motorsport extras", items: motorsport });
+}
+
   }
 
   return groups;
@@ -1283,4 +1285,5 @@ setStep(state.step);
 </script>
 </body>
 </html>
+
 
