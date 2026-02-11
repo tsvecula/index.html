@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AXION Configurator – Wizard Prototype</title>
+  <style>
+    :root{
+      --bg0:#070b14;
+      --bg1:#0b1220;
+      --card:rgba(255,255,255,.04);
+      --card2:rgba(255,255,255,.06);
+      --border:rgba(255,255,255,.08);
+      --text:#eaf1ff;
+      --muted:#9bb0d0;
+      --accent:#52bfff;       /* cyan */
+      --accent2:#6dffb0;      /* mint */
+      --warn:#ffd37a;
+      --danger:#ff6b6b;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 700px at 15% 0%, rgba(82,191,255,.18), transparent 55%),
+        radial-gradient(900px 650px at 90% 15%, rgba(109,255,176,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+    }
+
+    .wrap{ max-width:1100px; margin:0 auto; padding:22px 14px 70px; }
+    .topbar{
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; margin-bottom:14px;
+    }
+    .brand{ display:flex; align-items:center; gap:12px; }
+    .logo{
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, rgba(82,191,255,.95), rgba(109,255,176,.9));
+      box-shadow: 0 14px 40px rgba(82,191,255,.18);
+    }
+    .title{ margin:0; font-size:18px; letter-spacing:.2px; }
+    .subtitle{ margin:2px 0 0; color:var(--muted); font-size:13px; }
+
+    .actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .chip{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 12px; border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+    }
+    select, button{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:14px;
+      outline:none;
+    }
+    button{ cursor:pointer; }
+    button.primary{
+      background: linear-gradient(135deg, rgba(82,191,255,.25), rgba(109,255,176,.15));
+      border-color: rgba(82,191,255,.25);
+    }
+    button.ghost{ background:transparent; }
+
+    .layout{
+      display:grid; grid-template-columns: 1.15fr .85fr; gap:14px;
+    }
+    @media (max-width: 940px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+      overflow:hidden;
+    }
+
+    .wizardHead{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding-bottom:10px; border-bottom:1px solid var(--border);
+      margin-bottom:12px;
+    }
+    .stepTitle{ margin:0; font-size:15px; }
+    .steps{
+      display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+    }
+    .dot.active{
+      background: linear-gradient(135deg, rgba(82,191,255,.95), rgba(109,255,176,.9));
+      border-color: rgba(82,191,255,.5);
+      box-shadow: 0 0 0 6px rgba(82,191,255,.08);
+    }
+
+    .panel{ display:none; }
+    .panel.active{ display:block; }
+
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width:560px){ .grid2{ grid-template-columns:1fr; } }
+
+    .label{ font-size:12px; color:var(--muted); margin: 2px 0 6px; }
+
+    .choiceGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width:860px){ .choiceGrid{ grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width:520px){ .choiceGrid{ grid-template-columns: 1fr; } }
+
+    .tile{
+      display:flex; gap:12px;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      cursor:pointer;
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+      align-items:center;
+      min-height:88px;
+    }
+    .tile:hover{ transform: translateY(-1px); border-color: rgba(82,191,255,.35); background:rgba(255,255,255,.05); }
+    .tile.selected{ border-color: rgba(82,191,255,.55); box-shadow: 0 0 0 5px rgba(82,191,255,.08); }
+    .tileText b{ display:block; font-size:14px; }
+    .tileText small{ display:block; color:var(--muted); margin-top:2px; font-size:12px; }
+
+    .svgBox{
+      width:56px; min-width:56px; height:56px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+    }
+    svg{ width:42px; height:42px; opacity:.92; }
+    .stroke{ stroke: rgba(234,241,255,.9); stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+    .stroke2{ stroke: rgba(82,191,255,.9); stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; opacity:.9; }
+
+    .divider{ height:1px; background:var(--border); margin:12px 0; }
+
+    .extras{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .extraGroup{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+    }
+    .extraGroupHead{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      margin-bottom:8px;
+    }
+    .extraGroupHead b{ font-size:13px; }
+    .muted{ color:var(--muted); font-size:13px; }
+
+    .checkrow{ display:flex; gap:10px; align-items:flex-start; padding:8px; border-radius:14px; }
+    .checkrow:hover{ background:rgba(255,255,255,.03); }
+    .checkrow input{ margin-top:2px; }
+    .price{ font-weight:700; white-space:nowrap; }
+    .rowBetween{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .btnRow{ display:flex; gap:10px; justify-content:space-between; margin-top:12px; flex-wrap:wrap; }
+    .leftBtns{ display:flex; gap:10px; }
+    .rightBtns{ display:flex; gap:10px; margin-left:auto; }
+
+    .summaryList{ display:flex; flex-direction:column; gap:10px; }
+    .line{
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+      padding:10px; border:1px solid var(--border);
+      border-radius:16px; background:rgba(255,255,255,.03);
+    }
+    .line small{ display:block; color:var(--muted); margin-top:2px; }
+    .totalBox{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:14px; border-radius:18px;
+      border:1px solid rgba(82,191,255,.25);
+      background: linear-gradient(135deg, rgba(82,191,255,.10), rgba(109,255,176,.06));
+    }
+    .total{ font-size:26px; font-weight:900; letter-spacing:.3px; }
+    .fineprint{ color:var(--muted); font-size:12px; line-height:1.35; margin-top:10px; }
+
+    a.link{ color:var(--accent); text-decoration:none; }
+    a.link:hover{ text-decoration:underline; }
+
+    .badge{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid var(--border); background:rgba(255,255,255,.03);
+      font-size:12px; color:var(--muted);
+    }
+    .ok{ color: var(--accent2); }
+    .warn{ color: var(--warn); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1 class="title">AXION Configurator</h1>
+        <p class="subtitle">Step-by-step product builder for QR landing page</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <div class="chip">
+        <span class="muted">Currency</span>
+        <select id="currency">
+          <option value="USD">$ USD (ft)</option>
+          <option value="EUR">€ EUR (m)</option>
+        </select>
+      </div>
+      <button id="copyLink" class="ghost">Copy link</button>
+      <button id="reset" class="ghost">Reset</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- LEFT: WIZARD -->
+    <div class="card">
+      <div class="wizardHead">
+        <div>
+          <h2 class="stepTitle" id="stepTitle">Step 1 of 5</h2>
+          <div class="muted" id="stepSubtitle">Choose a category</div>
+        </div>
+        <div class="steps" id="dots"></div>
+      </div>
+
+      <!-- STEP 1: CATEGORY -->
+      <div class="panel active" data-step="0">
+        <div class="choiceGrid" id="categoryGrid"></div>
+      </div>
+
+      <!-- STEP 2: MODEL -->
+      <div class="panel" data-step="1">
+        <div class="choiceGrid" id="modelGrid"></div>
+      </div>
+
+      <!-- STEP 3: SIZE -->
+      <div class="panel" data-step="2">
+        <div class="muted" style="margin-bottom:10px;">
+          Sizes switch automatically to <b>ft</b> in USD and <b>m</b> in EUR.
+        </div>
+        <div class="choiceGrid" id="sizeGrid"></div>
+      </div>
+
+      <!-- STEP 4: CONFIG + EXTRAS -->
+      <div class="panel" data-step="3">
+        <div class="grid2">
+          <div>
+            <div class="label">Configuration</div>
+            <select id="configSelect" style="width:100%"></select>
+          </div>
+          <div>
+            <div class="label">Quick notes</div>
+            <div class="badge"><span class="ok">●</span> Sealed inflatable, no blower</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="rowBetween">
+          <b>Optional extras</b>
+          <span class="muted">Tap to add, total updates instantly</span>
+        </div>
+
+        <div class="extras" id="extrasWrap" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- STEP 5: SUMMARY -->
+      <div class="panel" data-step="4">
+        <div class="muted" style="margin-bottom:10px;">
+          Review your configuration. You can go back and adjust anything.
+        </div>
+        <div id="summaryInline"></div>
+
+        <div class="divider"></div>
+
+        <div class="rowBetween" style="align-items:center;">
+          <div>
+            <b>Free 3D mockup</b>
+            <div class="muted">We can prepare a visual proposal for your design.</div>
+          </div>
+          <button class="primary" id="mockupBtn">Request free 3D mockup</button>
+        </div>
+
+        <div class="fineprint">
+          Delivery fee depends on destination and shipment method. Final quote may change based on location, lead time, and selected accessories.
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <div class="leftBtns">
+          <button id="backBtn" class="ghost">Back</button>
+        </div>
+        <div class="rightBtns">
+          <button id="nextBtn" class="primary">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: LIVE SUMMARY -->
+    <div class="card">
+      <div class="rowBetween" style="align-items:center;">
+        <b>Estimate</b>
+        <span class="badge"><span class="warn">●</span> Prototype pricing</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="summaryList" id="summaryList"></div>
+
+      <div class="divider"></div>
+
+      <div class="totalBox">
+        <div>
+          <div class="muted">Estimated total</div>
+          <div class="muted" style="margin-top:6px;">Prices will be exact after we connect your Excel lists.</div>
+        </div>
+        <div class="total" id="total">—</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <button class="ghost" id="exportBtn" style="width:100%;">Export configuration (JSON)</button>
+
+      <div class="fineprint">
+        Tip: once the flow is final, we can host this as a QR landing page and add a lead form to send the configuration to AXION sales.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================
+   DATA (prototype placeholders)
+   Next step: replace with values from your EUR + US Excel price lists.
+   ========================= */
+
+const CATEGORIES = [
+  { key:"tents", name:"Tents", icon:"tent" },
+  { key:"shapes", name:"Shapes", icon:"arch" },
+  { key:"furniture", name:"Furniture", icon:"chair" },
+  { key:"motorsport", name:"Motorsport", icon:"garage" },
+];
+
+const MODELS = {
+  tents: [
+    { key:"easy", name:"Easy", icon:"tent" },
+    { key:"lite", name:"Lite", icon:"tent" },
+    { key:"square", name:"Square", icon:"squareTent" },
+    { key:"cube", name:"Cube", icon:"cube" },
+    { key:"cube_lite", name:"Cube Lite", icon:"cube" },
+    { key:"spider", name:"Spider", icon:"dome" },
+    { key:"tripod", name:"Tripod", icon:"tripod" },
+    { key:"hexa", name:"Hexa", icon:"hexa" },
+    { key:"pod", name:"Pod", icon:"pod" },
+  ],
+  shapes: [
+    { key:"arch_angled", name:"Angled Arch", icon:"arch" },
+    { key:"arch_rounded", name:"Rounded Arch", icon:"arch" },
+    { key:"arch_rect", name:"Rectangular Arch", icon:"frame" },
+    { key:"arch_zip", name:"Zip-off Arch", icon:"arch" },
+    { key:"tube", name:"Tube", icon:"tube" },
+    { key:"can", name:"Can", icon:"can" },
+    { key:"bottle", name:"Bottle", icon:"bottle" },
+    { key:"block", name:"Block", icon:"block" },
+    { key:"frame", name:"Frame", icon:"frame" },
+    { key:"wall", name:"Wall", icon:"wall" },
+    { key:"float", name:"Float", icon:"float" },
+    { key:"podium", name:"Awards Podium", icon:"podium" },
+  ],
+  furniture: [
+    { key:"table", name:"Table", icon:"table" },
+    { key:"desk", name:"Desk", icon:"desk" },
+    { key:"seat", name:"Seat", icon:"chair" },
+    { key:"chillout", name:"Chillout", icon:"sofa" },
+    { key:"donut", name:"Donut", icon:"donut" },
+  ],
+  motorsport: [
+    { key:"square_ms", name:"Square (Motorsport setup)", icon:"garage" },
+    { key:"era6060", name:"ERA X 6060 (Motorsport)", icon:"garage" },
+  ]
+};
+
+// sizes with both metric + imperial display
+// (you said: USD => feet, EUR => meters)
+const SIZES = {
+  // tents
+  easy: [
+    { key:"33", label_m:"3.3 × 3.3 m", label_ft:"10'10\" × 10'10\"" },
+    { key:"44", label_m:"4.0 × 4.0 m", label_ft:"13'1\" × 13'1\"" },
+    { key:"55", label_m:"5.0 × 5.0 m", label_ft:"16'5\" × 16'5\"" },
+    { key:"66", label_m:"6.0 × 6.0 m", label_ft:"19'8\" × 19'8\"" },
+  ],
+  lite: [
+    { key:"33", label_m:"3.3 × 3.3 m", label_ft:"10'10\" × 10'10\"" },
+    { key:"44", label_m:"4.0 × 4.0 m", label_ft:"13'1\" × 13'1\"" },
+    { key:"55", label_m:"5.0 × 5.0 m", label_ft:"16'5\" × 16'5\"" },
+    { key:"66", label_m:"6.0 × 6.0 m", label_ft:"19'8\" × 19'8\"" },
+  ],
+  square: [
+    { key:"44", label_m:"4.0 × 4.0 m", label_ft:"13'1\" × 13'1\"" },
+    { key:"55", label_m:"5.0 × 5.0 m", label_ft:"16'5\" × 16'5\"" },
+    { key:"66", label_m:"6.0 × 6.0 m", label_ft:"19'8\" × 19'8\"" },
+    { key:"77", label_m:"7.0 × 7.0 m", label_ft:"23'0\" × 23'0\"" },
+  ],
+  cube: [
+    { key:"33", label_m:"3.0 × 3.0 m", label_ft:"9'10\" × 9'10\"" },
+    { key:"44", label_m:"4.0 × 4.0 m", label_ft:"13'1\" × 13'1\"" },
+    { key:"55", label_m:"5.0 × 5.0 m", label_ft:"16'5\" × 16'5\"" },
+  ],
+  cube_lite: [
+    { key:"44", label_m:"4.0 × 4.0 m", label_ft:"13'1\" × 13'1\"" },
+  ],
+  spider: [
+    { key:"8", label_m:"Ø 8 m", label_ft:"Ø 26'3\"" },
+    { key:"10", label_m:"Ø 10 m", label_ft:"Ø 32'10\"" },
+  ],
+  tripod: [
+    { key:"5", label_m:"5 × 5 m", label_ft:"16'5\" × 16'5\"" },
+    { key:"6", label_m:"6 × 6 m", label_ft:"19'8\" × 19'8\"" },
+    { key:"7", label_m:"7 × 7 m", label_ft:"23'0\" × 23'0\"" },
+    { key:"8", label_m:"8 × 8 m", label_ft:"26'3\" × 26'3\"" },
+    { key:"9", label_m:"9 × 9 m", label_ft:"29'6\" × 29'6\"" },
+  ],
+  hexa: [
+    { key:"44", label_m:"9.5 × 5.55 m", label_ft:"31'2\" × 18'0\"" },
+    { key:"55", label_m:"11.55 × 6.85 m", label_ft:"37'11\" × 22'6\"" },
+  ],
+  pod: [
+    { key:"35-35", label_m:"3.5 × 3.5 m", label_ft:"11'6\" × 11'6\"" },
+    { key:"40-40", label_m:"4.0 × 4.0 m", label_ft:"13'1\" × 13'1\"" },
+    { key:"50-50", label_m:"5.0 × 5.0 m", label_ft:"16'5\" × 16'5\"" },
+  ],
+  // shapes (simplified)
+  arch_angled: [
+    { key:"4m", label_m:"4 m", label_ft:"13'1\"" },
+    { key:"5m", label_m:"5 m", label_ft:"16'5\"" },
+    { key:"6m", label_m:"6 m", label_ft:"19'8\"" },
+    { key:"8m", label_m:"8 m", label_ft:"26'3\"" },
+    { key:"10m", label_m:"10 m", label_ft:"32'10\"" },
+    { key:"12m", label_m:"12 m", label_ft:"39'4\"" },
+  ],
+  arch_rounded: [
+    { key:"6m", label_m:"6 m", label_ft:"19'8\"" },
+    { key:"8m", label_m:"8 m", label_ft:"26'3\"" },
+    { key:"10m", label_m:"10 m", label_ft:"32'10\"" },
+  ],
+  arch_rect: [
+    { key:"5m", label_m:"5 m", label_ft:"16'5\"" },
+    { key:"6m", label_m:"6 m", label_ft:"19'8\"" },
+    { key:"8m", label_m:"8 m", label_ft:"26'3\"" },
+  ],
+  arch_zip: [
+    { key:"8m", label_m:"8 m", label_ft:"26'3\"" },
+    { key:"10m", label_m:"10 m", label_ft:"32'10\"" },
+  ],
+  tube: [
+    { key:"2.5m", label_m:"2.5 m", label_ft:"8'2\"" },
+    { key:"3m", label_m:"3 m", label_ft:"9'10\"" },
+    { key:"4m", label_m:"4 m", label_ft:"13'1\"" },
+    { key:"5m", label_m:"5 m", label_ft:"16'5\"" },
+  ],
+  can: [
+    { key:"2m", label_m:"2 m", label_ft:"6'7\"" },
+    { key:"3m", label_m:"3 m", label_ft:"9'10\"" },
+    { key:"4m", label_m:"4 m", label_ft:"13'1\"" },
+  ],
+  bottle: [
+    { key:"2m", label_m:"2 m", label_ft:"6'7\"" },
+    { key:"2.5m", label_m:"2.5 m", label_ft:"8'2\"" },
+    { key:"3m", label_m:"3 m", label_ft:"9'10\"" },
+    { key:"4m", label_m:"4 m", label_ft:"13'1\"" },
+  ],
+  block: [
+    { key:"2.5m", label_m:"2.5 m", label_ft:"8'2\"" },
+    { key:"3m", label_m:"3 m", label_ft:"9'10\"" },
+    { key:"4m", label_m:"4 m", label_ft:"13'1\"" },
+  ],
+  frame: [
+    { key:"FR400", label_m:"4.0 × 3.0 m", label_ft:"13'1\" × 9'10\"" },
+  ],
+  wall: [
+    { key:"2.5x3.2", label_m:"2.5 × 3.2 m", label_ft:"8'2\" × 10'6\"" },
+    { key:"2.5x4.1", label_m:"2.5 × 4.1 m", label_ft:"8'2\" × 13'5\"" },
+    { key:"3x4.1", label_m:"3.0 × 4.1 m", label_ft:"9'10\" × 13'5\"" },
+  ],
+  float: [
+    { key:"cube150", label_m:"Cube 1.5 m", label_ft:"4'11\"" },
+    { key:"cube200", label_m:"Cube 2.0 m", label_ft:"6'7\"" },
+    { key:"tube", label_m:"Tube", label_ft:"Tube" },
+  ],
+  podium: [
+    { key:"1-step", label_m:"1 step", label_ft:"1 step" },
+    { key:"2-step", label_m:"2 step", label_ft:"2 step" },
+    { key:"3-step", label_m:"3 step", label_ft:"3 step" },
+  ],
+  // furniture
+  table: [
+    { key:"bistro", label_m:"Bistro (110 cm)", label_ft:"Bistro (3'7\")" },
+    { key:"bongo", label_m:"Bongo (72 cm)", label_ft:"Bongo (2'4\")" },
+  ],
+  desk: [
+    { key:"straight", label_m:"Straight desk", label_ft:"Straight desk" },
+    { key:"bended", label_m:"Bended desk", label_ft:"Bended desk" },
+  ],
+  seat: [
+    { key:"you", label_m:"You seat", label_ft:"You seat" },
+    { key:"omega", label_m:"Omega seat", label_ft:"Omega seat" },
+    { key:"puff", label_m:"Puff", label_ft:"Puff" },
+  ],
+  chillout: [
+    { key:"set", label_m:"Chillout set", label_ft:"Chillout set" },
+  ],
+  donut: [
+    { key:"donut", label_m:"Donut", label_ft:"Donut" },
+  ],
+  // motorsport
+  square_ms: [
+    { key:"66", label_m:"6.0 × 6.0 m", label_ft:"19'8\" × 19'8\"" },
+    { key:"77", label_m:"7.0 × 7.0 m", label_ft:"23'0\" × 23'0\"" },
+  ],
+  era6060: [
+    { key:"6060", label_m:"6.0 × 6.0 m", label_ft:"19'8\" × 19'8\"" },
+  ]
+};
+
+// placeholder config options (per model)
+function configsFor(modelKey){
+  const base = [
+    { id:"WHITE", label:"White / standard", price:{ EUR: 0, USD: 0 } },
+    { id:"CUSTOM", label:"Custom print (full color)", price:{ EUR: 0, USD: 0 } },
+  ];
+
+  // Example: some models have printed walls variants
+  if (["lite","easy","square","cube","spider","pod","tripod","hexa"].includes(modelKey)){
+    return [
+      { id:"WHITE", label:"White / no walls", price:{ EUR: 2400, USD: 2435 } },
+      { id:"CUSTOM_2W", label:"Custom design + printed walls", price:{ EUR: 3300, USD: 3325 } },
+    ];
+  }
+  if (["table","desk","seat","chillout","donut"].includes(modelKey)){
+    return [
+      { id:"WHITE", label:"Standard", price:{ EUR: 900, USD: 950 } },
+      { id:"CUSTOM", label:"Custom branding", price:{ EUR: 1100, USD: 1150 } },
+    ];
+  }
+  // shapes
+  return [
+    { id:"BASE", label:"Standard", price:{ EUR: 2500, USD: 2626 } },
+    { id:"CUSTOM", label:"Custom branding", price:{ EUR: 2900, USD: 3174 } },
+  ];
+}
+
+// extras: shown after size selection, tick to add
+function extrasFor(modelKey, sizeKey){
+  // Keep it simple for Americans: few groups, clear labels
+  const common = [
+    { id:"pump", label:"Automatic air pump", hint:"Recommended for faster setup", price:{ EUR: 1150, USD: 1150 } },
+    { id:"carry", label:"Extra carry bag", hint:"Backup transport bag", price:{ EUR: 180, USD: 210 } },
+  ];
+
+  const lighting = [
+    { id:"illum_white", label:"Internal illumination (white)", hint:"Night visibility", price:{ EUR: 420, USD: 480 } },
+    { id:"illum_rgb", label:"Internal illumination (RGB)", hint:"Color effects", price:{ EUR: 520, USD: 590 } },
+  ];
+
+  const ballast = [
+    { id:"ballast_plate", label:"Ballast plate", hint:"Better stability on hard surface", price:{ EUR: 240, USD: 280 } },
+    { id:"ballast_bag", label:"Ballast water bag", hint:"Portable weight", price:{ EUR: 95, USD: 120 } },
+  ];
+
+  const motorsport = [
+    { id:"mosquito", label:"Rolling wall with mosquito net", hint:"Service tent comfort", perSize:{
+      "66":{ EUR:685, USD:720 }, "77":{ EUR:730, USD:770 }, "6060":{ EUR:700, USD:750 }
+    }},
+    { id:"window", label:"Wall with removable window", hint:"Better airflow control", perSize:{
+      "66":{ EUR:350, USD:385 }, "77":{ EUR:420, USD:460 }, "6060":{ EUR:390, USD:420 }
+    }},
+    { id:"panorama", label:"Panorama door (car access)", hint:"2×3m opening", perSize:{
+      "66":{ EUR:430, USD:475 }, "77":{ EUR:490, USD:540 }, "6060":{ EUR:460, USD:510 }
+    }},
+    { id:"floor", label:"PVC silver floor", hint:"Motorsport floor", perSize:{
+      "66":{ EUR:1255, USD:1360 }, "77":{ EUR:1375, USD:1490 }, "6060":{ EUR:1290, USD:1400 }
+    }},
+    { id:"floor_car", label:"PVC silver floor + car spacer + printing", hint:"Premium paddock look", perSize:{
+      "66":{ EUR:1495, USD:1620 }, "77":{ EUR:1615, USD:1750 }, "6060":{ EUR:1540, USD:1670 }
+    }},
+    { id:"light_system", label:"Built-in lighting system (12 lights)", hint:"Undercarriage lighting", perSize:{
+      "66":{ EUR:2150, USD:2320 }, "77":{ EUR:2230, USD:2410 }, "6060":{ EUR:2190, USD:2380 }
+    }},
+  ];
+
+  // group logic
+  const groups = [];
+
+  // tents: show common + lighting; motorsport group for motorsport category or square variants
+  if (["easy","lite","square","cube","cube_lite","spider","tripod","hexa","pod"].includes(modelKey)){
+    groups.push({ name:"Recommended", items: common });
+    groups.push({ name:"Lighting", items: lighting });
+  }
+
+  // shapes: ballast + lighting
+  if (["arch_angled","arch_rounded","arch_rect","arch_zip","tube","can","bottle","block","frame","wall","float","podium"].includes(modelKey)){
+    groups.push({ name:"Stability", items: ballast });
+    groups.push({ name:"Lighting", items: lighting });
+  }
+
+  // furniture
+  if (["table","desk","seat","chillout","donut"].includes(modelKey)){
+    groups.push({ name:"Extras", items: [
+      { id:"acrylic", label:"Acrylic top cover (where applicable)", hint:"Showroom look", price:{ EUR: 160, USD: 185 } },
+      { id:"illum_white_f", label:"Internal illumination (white)", hint:"Atmosphere", price:{ EUR: 240, USD: 280 } },
+      { id:"illum_rgb_f", label:"Internal illumination (RGB)", hint:"Atmosphere", price:{ EUR: 290, USD: 330 } },
+    ]});
+  }
+
+  // motorsport category items
+  if (["square_ms","era6060","square"].includes(modelKey)){
+    groups.push({ name:"Motorsport extras", items: motorsport });
+  }
+
+  return groups;
+}
+
+/* =========================
+   UI HELPERS
+   ========================= */
+
+const qs = (id) => document.getElementById(id);
+
+function money(val, cur){
+  const sym = cur === "EUR" ? "€" : "$";
+  return sym + " " + Number(val || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
+}
+function unitLabel(currency){
+  return currency === "USD" ? "ft" : "m";
+}
+function sizeLabel(modelKey, sizeKey, currency){
+  const arr = SIZES[modelKey] || [];
+  const found = arr.find(s => s.key === sizeKey);
+  if (!found) return sizeKey;
+  return currency === "USD" ? found.label_ft : found.label_m;
+}
+function extraPrice(item, sizeKey, currency){
+  if (item.perSize && item.perSize[sizeKey] && item.perSize[sizeKey][currency] != null){
+    return item.perSize[sizeKey][currency];
+  }
+  return item.price?.[currency] ?? 0;
+}
+
+/* =========================
+   SIMPLE OUTLINE ICONS (SVG)
+   ========================= */
+
+function iconSvg(name){
+  const s = (inner) => `
+    <div class="svgBox" aria-hidden="true">
+      <svg viewBox="0 0 48 48">${inner}</svg>
+    </div>
+  `;
+  switch(name){
+    case "tent":
+      return s(`
+        <path class="stroke" d="M8 34 L24 10 L40 34" />
+        <path class="stroke2" d="M14 34 L24 18 L34 34" />
+        <path class="stroke" d="M10 34 H38" />
+      `);
+    case "squareTent":
+      return s(`
+        <path class="stroke" d="M10 32 L10 18 L24 10 L38 18 L38 32" />
+        <path class="stroke2" d="M10 18 L24 26 L38 18" />
+        <path class="stroke" d="M16 32 V22" />
+        <path class="stroke" d="M32 32 V22" />
+      `);
+    case "cube":
+      return s(`
+        <path class="stroke" d="M14 18 L24 12 L34 18 L24 24 Z" />
+        <path class="stroke" d="M14 18 V32 L24 38 L34 32 V18" />
+        <path class="stroke2" d="M24 24 V38" />
+      `);
+    case "dome":
+      return s(`
+        <path class="stroke" d="M10 34 C12 20, 18 12, 24 12 C30 12, 36 20, 38 34" />
+        <path class="stroke2" d="M14 34 C16 24, 20 18, 24 18 C28 18, 32 24, 34 34" />
+        <path class="stroke" d="M10 34 H38" />
+      `);
+    case "tripod":
+      return s(`
+        <path class="stroke" d="M24 10 L10 34" />
+        <path class="stroke" d="M24 10 L38 34" />
+        <path class="stroke2" d="M14 28 L34 28" />
+        <path class="stroke" d="M10 34 H38" />
+      `);
+    case "hexa":
+      return s(`
+        <path class="stroke" d="M24 10 L34 16 L34 28 L24 34 L14 28 L14 16 Z" />
+        <path class="stroke2" d="M14 16 L24 22 L34 16" />
+      `);
+    case "pod":
+      return s(`
+        <path class="stroke" d="M10 20 Q24 10 38 20 V32 Q24 40 10 32 Z" />
+        <path class="stroke2" d="M14 28 H34" />
+      `);
+    case "arch":
+      return s(`
+        <path class="stroke" d="M12 34 V24 C12 16 18 12 24 12 C30 12 36 16 36 24 V34" />
+        <path class="stroke2" d="M18 34 V24 C18 19 21 18 24 18 C27 18 30 19 30 24 V34" />
+      `);
+    case "frame":
+      return s(`
+        <rect class="stroke" x="12" y="14" width="24" height="22" rx="3" />
+        <path class="stroke2" d="M16 18 H32" />
+      `);
+    case "tube":
+      return s(`
+        <path class="stroke" d="M18 14 H30" />
+        <path class="stroke" d="M18 34 H30" />
+        <path class="stroke" d="M18 14 C14 14 14 34 18 34" />
+        <path class="stroke2" d="M30 14 C34 14 34 34 30 34" />
+      `);
+    case "can":
+      return s(`
+        <path class="stroke" d="M18 14 H30" />
+        <path class="stroke" d="M18 34 H30" />
+        <path class="stroke2" d="M18 14 V34" />
+        <path class="stroke2" d="M30 14 V34" />
+      `);
+    case "bottle":
+      return s(`
+        <path class="stroke" d="M22 12 H26" />
+        <path class="stroke" d="M20 12 V18 C20 20 18 22 18 24 V34 C18 36 20 38 24 38 C28 38 30 36 30 34 V24 C30 22 28 20 28 18 V12" />
+        <path class="stroke2" d="M20 24 H28" />
+      `);
+    case "block":
+      return s(`
+        <rect class="stroke" x="14" y="14" width="20" height="22" rx="2" />
+        <path class="stroke2" d="M14 20 H34" />
+      `);
+    case "wall":
+      return s(`
+        <rect class="stroke" x="12" y="14" width="24" height="22" rx="2" />
+        <path class="stroke2" d="M12 34 L18 38" />
+        <path class="stroke2" d="M36 34 L30 38" />
+      `);
+    case "float":
+      return s(`
+        <path class="stroke" d="M16 28 C20 22 28 22 32 28" />
+        <path class="stroke2" d="M12 30 C18 34 30 34 36 30" />
+        <path class="stroke" d="M14 22 C18 18 30 18 34 22" />
+      `);
+    case "podium":
+      return s(`
+        <path class="stroke" d="M14 34 V24 H22 V34" />
+        <path class="stroke2" d="M22 34 V18 H30 V34" />
+        <path class="stroke" d="M30 34 V26 H36 V34" />
+        <path class="stroke" d="M12 34 H38" />
+      `);
+    case "table":
+      return s(`
+        <path class="stroke" d="M16 16 H32" />
+        <path class="stroke2" d="M18 16 C14 22 14 28 18 34" />
+        <path class="stroke2" d="M30 16 C34 22 34 28 30 34" />
+        <path class="stroke" d="M18 34 H30" />
+      `);
+    case "desk":
+      return s(`
+        <path class="stroke" d="M12 18 H36" />
+        <path class="stroke2" d="M14 18 V34 H34 V18" />
+        <path class="stroke" d="M18 24 H30" />
+      `);
+    case "chair":
+      return s(`
+        <path class="stroke" d="M18 24 C18 18 30 18 30 24" />
+        <path class="stroke2" d="M18 24 V34" />
+        <path class="stroke2" d="M30 24 V34" />
+        <path class="stroke" d="M18 30 H30" />
+      `);
+    case "sofa":
+      return s(`
+        <path class="stroke" d="M14 26 C14 20 20 18 24 18 C28 18 34 20 34 26 V34 H14 Z" />
+        <path class="stroke2" d="M16 26 H32" />
+      `);
+    case "donut":
+      return s(`
+        <circle class="stroke" cx="24" cy="24" r="14" />
+        <circle class="stroke2" cx="24" cy="24" r="6" />
+      `);
+    case "garage":
+      return s(`
+        <path class="stroke" d="M10 24 L24 12 L38 24" />
+        <path class="stroke" d="M14 24 V36 H34 V24" />
+        <path class="stroke2" d="M18 36 V28 H30 V36" />
+      `);
+    default:
+      return s(`<circle class="stroke" cx="24" cy="24" r="14" />`);
+  }
+}
+
+/* =========================
+   STATE
+   ========================= */
+const state = {
+  currency: "USD",
+  step: 0,
+  categoryKey: null,
+  modelKey: null,
+  sizeKey: null,
+  configId: null,
+  extras: new Set()
+};
+
+const STEPS = [
+  { title:"Step 1 of 5", subtitle:"Choose a category" },
+  { title:"Step 2 of 5", subtitle:"Choose a model" },
+  { title:"Step 3 of 5", subtitle:"Choose a size" },
+  { title:"Step 4 of 5", subtitle:"Choose configuration and extras" },
+  { title:"Step 5 of 5", subtitle:"Summary & next steps" },
+];
+
+/* =========================
+   RENDER
+   ========================= */
+
+function renderDots(){
+  const dots = qs("dots");
+  dots.innerHTML = "";
+  for (let i=0;i<STEPS.length;i++){
+    const d = document.createElement("div");
+    d.className = "dot" + (i === state.step ? " active" : "");
+    dots.appendChild(d);
+  }
+}
+
+function setStep(n){
+  state.step = Math.max(0, Math.min(4, n));
+  qs("stepTitle").textContent = STEPS[state.step].title;
+  qs("stepSubtitle").textContent = STEPS[state.step].subtitle;
+  document.querySelectorAll(".panel").forEach(p => {
+    p.classList.toggle("active", Number(p.dataset.step) === state.step);
+  });
+  renderDots();
+
+  // button states
+  qs("backBtn").disabled = state.step === 0;
+  qs("backBtn").style.opacity = state.step === 0 ? 0.5 : 1;
+
+  const canNext = canGoNext();
+  qs("nextBtn").textContent = state.step === 4 ? "Finish" : "Next";
+  qs("nextBtn").disabled = !canNext && state.step !== 4;
+  qs("nextBtn").style.opacity = (!canNext && state.step !== 4) ? 0.5 : 1;
+
+  // ensure data exists on step transitions
+  if (state.step === 0) renderCategories();
+  if (state.step === 1) renderModels();
+  if (state.step === 2) renderSizes();
+  if (state.step === 3) renderConfigAndExtras();
+  if (state.step === 4) renderSummaryInline();
+
+  renderSummarySide();
+  syncUrl();
+}
+
+function canGoNext(){
+  if (state.step === 0) return !!state.categoryKey;
+  if (state.step === 1) return !!state.modelKey;
+  if (state.step === 2) return !!state.sizeKey;
+  if (state.step === 3) return !!state.configId; // extras optional
+  return true;
+}
+
+function renderCategories(){
+  const grid = qs("categoryGrid");
+  grid.innerHTML = "";
+  CATEGORIES.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "tile" + (state.categoryKey === c.key ? " selected" : "");
+    div.innerHTML = `
+      ${iconSvg(c.icon)}
+      <div class="tileText">
+        <b>${c.name}</b>
+        <small>${c.key === "motorsport" ? "Paddock-ready extras & layouts" : "Step-by-step configuration"}</small>
+      </div>
+    `;
+    div.addEventListener("click", () => {
+      state.categoryKey = c.key;
+      state.modelKey = null;
+      state.sizeKey = null;
+      state.configId = null;
+      state.extras = new Set();
+      renderCategories();
+      renderSummarySide();
+      syncUrl();
+    });
+    grid.appendChild(div);
+  });
+}
+
+function renderModels(){
+  const grid = qs("modelGrid");
+  grid.innerHTML = "";
+  const models = MODELS[state.categoryKey] || [];
+  models.forEach(m => {
+    const div = document.createElement("div");
+    div.className = "tile" + (state.modelKey === m.key ? " selected" : "");
+    div.innerHTML = `
+      ${iconSvg(m.icon)}
+      <div class="tileText">
+        <b>${m.name}</b>
+        <small>Tap to select</small>
+      </div>
+    `;
+    div.addEventListener("click", () => {
+      state.modelKey = m.key;
+      state.sizeKey = null;
+      state.configId = null;
+      state.extras = new Set();
+      renderModels();
+      renderSummarySide();
+      syncUrl();
+    });
+    grid.appendChild(div);
+  });
+}
+
+function renderSizes(){
+  const grid = qs("sizeGrid");
+  grid.innerHTML = "";
+  const sizeArr = SIZES[state.modelKey] || [];
+  sizeArr.forEach(s => {
+    const label = state.currency === "USD" ? s.label_ft : s.label_m;
+    const div = document.createElement("div");
+    div.className = "tile" + (state.sizeKey === s.key ? " selected" : "");
+    div.innerHTML = `
+      ${iconSvg(MODELS[state.categoryKey]?.find(x=>x.key===state.modelKey)?.icon || "tent")}
+      <div class="tileText">
+        <b>${label}</b>
+        <small>Size key: ${s.key}</small>
+      </div>
+    `;
+    div.addEventListener("click", () => {
+      state.sizeKey = s.key;
+      state.configId = null;
+      state.extras = new Set();
+      renderSizes();
+      renderSummarySide();
+      syncUrl();
+    });
+    grid.appendChild(div);
+  });
+}
+
+function renderConfigAndExtras(){
+  // config options
+  const cfgSel = qs("configSelect");
+  cfgSel.innerHTML = "";
+  const cfgs = configsFor(state.modelKey);
+  cfgs.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.id;
+    opt.textContent = c.label;
+    cfgSel.appendChild(opt);
+  });
+  if (!state.configId) state.configId = cfgs[0]?.id || null;
+  cfgSel.value = state.configId;
+
+  cfgSel.onchange = (e) => {
+    state.configId = e.target.value;
+    renderSummarySide();
+    syncUrl();
+  };
+
+  // extras
+  const wrap = qs("extrasWrap");
+  wrap.innerHTML = "";
+  const groups = extrasFor(state.modelKey, state.sizeKey);
+
+  if (!groups.length){
+    wrap.innerHTML = `<div class="muted">No extras available for this product in prototype data.</div>`;
+    return;
+  }
+
+  groups.forEach(g => {
+    const box = document.createElement("div");
+    box.className = "extraGroup";
+    box.innerHTML = `
+      <div class="extraGroupHead">
+        <b>${g.name}</b>
+        <span class="muted">Optional</span>
+      </div>
+    `;
+
+    g.items.forEach(it => {
+      const checked = state.extras.has(it.id);
+      const p = extraPrice(it, state.sizeKey, state.currency);
+
+      const row = document.createElement("label");
+      row.className = "checkrow";
+      row.innerHTML = `
+        <input type="checkbox" ${checked ? "checked" : ""} />
+        <div style="flex:1;">
+          <div class="rowBetween">
+            <div>
+              <b>${it.label}</b>
+              <small class="muted">${it.hint || ""}</small>
+            </div>
+            <div class="price">${money(p, state.currency)}</div>
+          </div>
+        </div>
+      `;
+      row.querySelector("input").addEventListener("change", (e) => {
+        if (e.target.checked) state.extras.add(it.id);
+        else state.extras.delete(it.id);
+        renderSummarySide();
+        syncUrl();
+      });
+
+      box.appendChild(row);
+    });
+
+    wrap.appendChild(box);
+  });
+}
+
+function selectedModelName(){
+  const list = MODELS[state.categoryKey] || [];
+  return list.find(x => x.key === state.modelKey)?.name || "—";
+}
+
+function calc(){
+  const cur = state.currency;
+  let base = 0;
+
+  const cfg = configsFor(state.modelKey).find(c => c.id === state.configId);
+  base = cfg?.price?.[cur] ?? 0;
+
+  let extrasTotal = 0;
+  const groups = extrasFor(state.modelKey, state.sizeKey);
+  const all = [];
+  groups.forEach(g => g.items.forEach(i => all.push(i)));
+
+  state.extras.forEach(id => {
+    const it = all.find(x => x.id === id);
+    if (!it) return;
+    extrasTotal += extraPrice(it, state.sizeKey, cur);
+  });
+
+  return { base, extrasTotal, total: base + extrasTotal };
+}
+
+function renderSummarySide(){
+  const list = qs("summaryList");
+  list.innerHTML = "";
+
+  const cur = state.currency;
+  const { base, extrasTotal, total } = calc();
+
+  const line1 = document.createElement("div");
+  line1.className = "line";
+  line1.innerHTML = `
+    <div>
+      <b>${selectedModelName()}</b>
+      <small>${(CATEGORIES.find(c=>c.key===state.categoryKey)?.name)||"—"}</small>
+      <small>Size: ${state.sizeKey ? sizeLabel(state.modelKey, state.sizeKey, cur) : "—"}</small>
+      <small>Config: ${state.configId || "—"}</small>
+    </div>
+    <div class="price">${money(base, cur)}</div>
+  `;
+  list.appendChild(line1);
+
+  if (state.extras.size){
+    const groups = extrasFor(state.modelKey, state.sizeKey);
+    const all = [];
+    groups.forEach(g => g.items.forEach(i => all.push(i)));
+
+    state.extras.forEach(id => {
+      const it = all.find(x => x.id === id);
+      if (!it) return;
+      const p = extraPrice(it, state.sizeKey, cur);
+      const l = document.createElement("div");
+      l.className = "line";
+      l.innerHTML = `<div><b>${it.label}</b><small>${it.hint||""}</small></div><div class="price">${money(p, cur)}</div>`;
+      list.appendChild(l);
+    });
+  } else {
+    const l = document.createElement("div");
+    l.className = "line";
+    l.innerHTML = `<div><b>No extras selected</b><small>Optional items will appear in Step 4.</small></div><div class="price">${money(0, cur)}</div>`;
+    list.appendChild(l);
+  }
+
+  qs("total").textContent = money(total, cur);
+}
+
+function renderSummaryInline(){
+  const cur = state.currency;
+  const { base, extrasTotal, total } = calc();
+
+  const box = document.createElement("div");
+  box.innerHTML = `
+    <div class="line">
+      <div>
+        <b>${selectedModelName()}</b>
+        <small>Size: ${sizeLabel(state.modelKey, state.sizeKey, cur)}</small>
+        <small>Currency: ${cur} • Units: ${unitLabel(cur)}</small>
+      </div>
+      <div class="price">${money(base, cur)}</div>
+    </div>
+  `;
+
+  const extrasBox = document.createElement("div");
+  extrasBox.style.marginTop = "10px";
+  extrasBox.className = "summaryList";
+
+  const groups = extrasFor(state.modelKey, state.sizeKey);
+  const all = [];
+  groups.forEach(g => g.items.forEach(i => all.push(i)));
+
+  if (state.extras.size){
+    state.extras.forEach(id => {
+      const it = all.find(x => x.id === id);
+      if (!it) return;
+      const p = extraPrice(it, state.sizeKey, cur);
+      const l = document.createElement("div");
+      l.className = "line";
+      l.innerHTML = `<div><b>${it.label}</b><small>${it.hint||""}</small></div><div class="price">${money(p, cur)}</div>`;
+      extrasBox.appendChild(l);
+    });
+  } else {
+    const l = document.createElement("div");
+    l.className = "line";
+    l.innerHTML = `<div><b>No extras selected</b><small>You can still add extras in Step 4.</small></div><div class="price">${money(0, cur)}</div>`;
+    extrasBox.appendChild(l);
+  }
+
+  const totalLine = document.createElement("div");
+  totalLine.className = "totalBox";
+  totalLine.style.marginTop = "12px";
+  totalLine.innerHTML = `
+    <div>
+      <div class="muted">Estimated total</div>
+      <div class="muted" style="margin-top:6px;">Delivery depends on destination.</div>
+    </div>
+    <div class="total">${money(total, cur)}</div>
+  `;
+
+  const wrap = qs("summaryInline");
+  wrap.innerHTML = "";
+  wrap.appendChild(box);
+  wrap.appendChild(extrasBox);
+  wrap.appendChild(totalLine);
+}
+
+/* =========================
+   URL SYNC (for QR presets)
+   ========================= */
+function syncUrl(){
+  const p = new URLSearchParams();
+  p.set("cur", state.currency);
+  if (state.categoryKey) p.set("cat", state.categoryKey);
+  if (state.modelKey) p.set("model", state.modelKey);
+  if (state.sizeKey) p.set("size", state.sizeKey);
+  if (state.configId) p.set("cfg", state.configId);
+  if (state.extras.size) p.set("x", [...state.extras].join(","));
+  p.set("step", String(state.step));
+  history.replaceState(null, "", `${location.pathname}?${p.toString()}`);
+}
+function loadFromUrl(){
+  const p = new URLSearchParams(location.search);
+  const cur = p.get("cur"); if (cur === "USD" || cur === "EUR") state.currency = cur;
+  const cat = p.get("cat"); if (cat && MODELS[cat]) state.categoryKey = cat;
+  const model = p.get("model"); if (model) state.modelKey = model;
+  const size = p.get("size"); if (size) state.sizeKey = size;
+  const cfg = p.get("cfg"); if (cfg) state.configId = cfg;
+  const x = p.get("x");
+  state.extras = new Set();
+  if (x) x.split(",").map(v=>v.trim()).filter(Boolean).forEach(v => state.extras.add(v));
+
+  const st = Number(p.get("step"));
+  if (!Number.isNaN(st)) state.step = Math.max(0, Math.min(4, st));
+}
+
+/* =========================
+   EVENTS
+   ========================= */
+qs("currency").addEventListener("change", (e) => {
+  state.currency = e.target.value;
+  // re-render current step so labels switch between ft/m
+  if (state.step === 2) renderSizes();
+  renderSummarySide();
+  if (state.step === 4) renderSummaryInline();
+  syncUrl();
+});
+
+qs("backBtn").addEventListener("click", () => setStep(state.step - 1));
+qs("nextBtn").addEventListener("click", () => {
+  if (state.step < 4) setStep(state.step + 1);
+  else alert("Prototype finished. Next: connect real EUR + US Excel price lists.");
+});
+
+qs("reset").addEventListener("click", () => { location.href = location.pathname; });
+
+qs("copyLink").addEventListener("click", async () => {
+  try{ await navigator.clipboard.writeText(location.href); alert("Link copied."); }
+  catch(e){ prompt("Copy link:", location.href); }
+});
+
+qs("exportBtn").addEventListener("click", () => {
+  const payload = {
+    currency: state.currency,
+    units: unitLabel(state.currency),
+    category: state.categoryKey,
+    model: state.modelKey,
+    size: state.sizeKey,
+    config: state.configId,
+    extras: [...state.extras],
+    estimate: calc(),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "axion-config.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+qs("mockupBtn").addEventListener("click", () => {
+  alert("Mockup request is a stub in prototype. Next version will open a form or email with your configuration attached.");
+});
+
+/* =========================
+   INIT
+   ========================= */
+loadFromUrl();
+
+// defaults
+if (!state.categoryKey) state.categoryKey = "tents";
+if (!state.modelKey) state.modelKey = MODELS[state.categoryKey][0].key;
+if (!state.sizeKey) state.sizeKey = (SIZES[state.modelKey]?.[0]?.key) || null;
+if (!state.configId) state.configId = configsFor(state.modelKey)[0]?.id || null;
+
+qs("currency").value = state.currency;
+
+renderDots();
+setStep(state.step);
+</script>
+</body>
+</html>
