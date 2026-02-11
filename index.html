@@ -1,264 +1,481 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AXION Configurator</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background:#0b1220;
-  color:white;
-  margin:0;
-  padding:20px;
-}
-.card{
-  background:#111a30;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:15px;
-}
-button{
-  padding:10px 16px;
-  border-radius:6px;
-  border:none;
-  cursor:pointer;
-}
-.primary{
-  background:#3aa6ff;
-  color:white;
-}
-.secondary{
-  background:#333;
-  color:white;
-}
-.choice{
-  padding:12px;
-  border:1px solid #333;
-  margin:6px 0;
-  cursor:pointer;
-  border-radius:6px;
-}
-.choice:hover{
-  border-color:#3aa6ff;
-}
-.selected{
-  border-color:#3aa6ff;
-  background:#16233f;
-}
-h2{
-  margin-top:0;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AXION Configurator (Clean Base)</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111a30;
+      --border:rgba(255,255,255,.10);
+      --text:#eef4ff;
+      --muted:#9bb0d0;
+      --accent:#52bfff;
+      --accent2:#6dffb0;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1100px 700px at 15% 0%, rgba(82,191,255,.18), transparent 55%),
+        radial-gradient(900px 650px at 90% 15%, rgba(109,255,176,.12), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      padding:22px 14px 70px;
+    }
+    .wrap{ max-width:1100px; margin:0 auto; }
+    .top{
+      display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, rgba(82,191,255,.95), rgba(109,255,176,.9));
+      box-shadow: 0 14px 40px rgba(82,191,255,.18);
+    }
+    h1{ margin:0; font-size:18px; letter-spacing:.2px; }
+    .sub{ margin:2px 0 0; color:var(--muted); font-size:13px; }
+    .chip{
+      display:flex; gap:10px; align-items:center;
+      padding:10px 12px; border:1px solid var(--border); border-radius:16px;
+      background:rgba(255,255,255,.03);
+    }
+    select, button{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:14px;
+      outline:none;
+    }
+    button{ cursor:pointer; }
+    button.primary{
+      background: linear-gradient(135deg, rgba(82,191,255,.25), rgba(109,255,176,.15));
+      border-color: rgba(82,191,255,.25);
+    }
+    button.ghost{ background:transparent; }
+    .layout{ display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; }
+    @media (max-width: 940px){ .layout{ grid-template-columns:1fr; } }
+    .card{
+      background: rgba(17,26,48,.92);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.30);
+    }
+    .head{
+      display:flex; justify-content:space-between; gap:12px; align-items:center;
+      padding-bottom:10px; border-bottom:1px solid var(--border); margin-bottom:12px;
+    }
+    .stepTitle{ margin:0; font-size:15px; }
+    .muted{ color:var(--muted); font-size:13px; }
+    .grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; }
+    @media (max-width: 520px){ .grid{ grid-template-columns:1fr; } }
+    .tile{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:12px;
+      cursor:pointer;
+      transition: .12s ease;
+    }
+    .tile:hover{ border-color: rgba(82,191,255,.35); transform: translateY(-1px); }
+    .tile.selected{ border-color: rgba(82,191,255,.55); box-shadow: 0 0 0 5px rgba(82,191,255,.08); }
+    .tile b{ display:block; font-size:14px; }
+    .tile small{ display:block; margin-top:3px; color:var(--muted); }
+    .btnRow{ display:flex; justify-content:space-between; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .line{
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+      padding:10px; border:1px solid var(--border); border-radius:16px;
+      background:rgba(255,255,255,.03);
+      margin-bottom:10px;
+    }
+    .total{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:14px; border-radius:18px;
+      border:1px solid rgba(82,191,255,.25);
+      background: linear-gradient(135deg, rgba(82,191,255,.10), rgba(109,255,176,.06));
+      font-weight:900; font-size:22px;
+    }
+    .note{
+      margin-top:10px; color:var(--muted); font-size:12px; line-height:1.35;
+    }
+    .check{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px; border-radius:14px;
+    }
+    .check:hover{ background:rgba(255,255,255,.03); }
+    .price{ font-weight:800; white-space:nowrap; }
+  </style>
 </head>
-
 <body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>AXION Configurator</h1>
+        <div class="sub">Clean base build (stable). Next step: connect Excel pricing.</div>
+      </div>
+    </div>
 
-<h1>AXION Configurator</h1>
+    <div class="chip">
+      <span class="muted">Currency</span>
+      <select id="currency">
+        <option value="USD">$ USD (ft)</option>
+        <option value="EUR">€ EUR (m)</option>
+      </select>
+      <button id="reset" class="ghost">Reset</button>
+    </div>
+  </div>
 
-<div class="card">
-<label>Currency:</label>
-<select id="currency">
-  <option value="USD">$ USD (ft)</option>
-  <option value="EUR">€ EUR (m)</option>
-</select>
-</div>
+  <div class="layout">
+    <div class="card">
+      <div class="head">
+        <div>
+          <h2 class="stepTitle" id="stepTitle">Step 1 of 4</h2>
+          <div class="muted" id="stepSub">Choose a category</div>
+        </div>
+        <div class="muted" id="stepHint"></div>
+      </div>
 
-<div class="card" id="wizard"></div>
+      <div id="panel"></div>
 
-<div class="card">
-<h2>Summary</h2>
-<div id="summary"></div>
-<h3 id="total"></h3>
+      <div class="btnRow">
+        <button id="back" class="ghost">Back</button>
+        <button id="next" class="primary">Next</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <b>Summary</b>
+        <span class="muted" id="units">Units: ft</span>
+      </div>
+
+      <div id="summary"></div>
+
+      <div class="total">
+        <div>Estimated total</div>
+        <div id="total">$ 0</div>
+      </div>
+
+      <div class="note">
+        Free 3D mockup available on request. Delivery fee depends on destination and shipment method.
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-
-const state = {
-  step:0,
-  currency:"USD",
-  category:null,
-  model:null,
-  size:null,
-  extras:[]
-};
-
-const categories = {
-  tents:["Easy","Lite","Square","Cube","Spider","Tripod","Hexa","Pod"],
-  shapes:["Arch","Tube","Can","Bottle","Block","Wall","Float","Podium"],
-  furniture:["Table","Desk","Seat","Chillout","Donut"],
-  motorsport:["Square Motorsport","ERA X 6060"]
-};
-
-const sizes = {
-  Square:[
-    {m:"6x6 m", ft:"19x19 ft"},
-    {m:"7x7 m", ft:"23x23 ft"}
+/* ========= DATA (placeholder) =========
+   This base is stable. Next step: replace CONFIGS/EXTRAS/PRICES with your Excel-driven JSON.
+*/
+const DATA = {
+  categories: [
+    { key:"tents", name:"Tents" },
+    { key:"shapes", name:"Shapes" },
+    { key:"furniture", name:"Furniture" },
+    { key:"motorsport", name:"Motorsport" },
   ],
-  "Square Motorsport":[
-    {m:"6x6 m", ft:"19x19 ft"},
-    {m:"7x7 m", ft:"23x23 ft"}
+  models: {
+    tents: ["Easy","Lite","Square","Cube","Spider","Tripod","Hexa","Pod"],
+    shapes: ["Arch","Tube","Can","Bottle","Block","Wall","Float","Podium"],
+    furniture: ["Table","Desk","Seat","Chillout","Donut"],
+    motorsport: ["Square Motorsport","ERA X 6060"],
+  },
+  // Sizes shown in the unit system selected
+  sizes: {
+    Square: [
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+      { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
+    ],
+    "Square Motorsport": [
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+      { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
+    ],
+    "ERA X 6060": [
+      { key:"6060", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+    ],
+    _default: [
+      { key:"std", m:"Standard", ft:"Standard" }
+    ]
+  },
+  // Base configuration options (placeholder)
+  configs: {
+    _default: [
+      { id:"WHITE", label:"White / standard", price:{ USD: 0, EUR: 0 } },
+      { id:"CUSTOM", label:"Custom print", price:{ USD: 0, EUR: 0 } },
+    ]
+  },
+  // Regular extras (placeholder) – will be replaced by Excel-driven items
+  regularExtras: [
+    { id:"pump", label:"Automatic air pump", hint:"Optional", price:{ USD:1150, EUR:1150 } },
+    { id:"carry", label:"Carry bag", hint:"Transport", price:{ USD:210, EUR:180 } },
   ],
-  "ERA X 6060":[
-    {m:"6x6 m", ft:"19x19 ft"}
+  // Motorsport extras (only for Motorsport category)
+  motorsportExtras: [
+    { id:"mosquito", label:"Rolling wall with mosquito net", hint:"Motorsport", price:{ USD:720, EUR:685 } },
+    { id:"panorama", label:"Panorama door (car access)", hint:"Motorsport", price:{ USD:475, EUR:430 } },
+    { id:"floor", label:"PVC silver floor", hint:"Motorsport", price:{ USD:1360, EUR:1255 } },
+    { id:"light", label:"Built-in lighting system", hint:"Motorsport", price:{ USD:2320, EUR:2150 } },
   ]
 };
 
-function render(){
-
-  const wizard = document.getElementById("wizard");
-  wizard.innerHTML="";
-
-  if(state.step===0){
-    wizard.innerHTML="<h2>Select Category</h2>";
-    Object.keys(categories).forEach(cat=>{
-      const div=document.createElement("div");
-      div.className="choice";
-      div.innerText=cat.toUpperCase();
-      div.onclick=()=>{
-        state.category=cat;
-        state.model=null;
-        state.size=null;
-        state.extras=[];
-        state.step=1;
-        render();
-      };
-      wizard.appendChild(div);
-    });
-  }
-
-  if(state.step===1){
-    wizard.innerHTML="<h2>Select Model</h2>";
-    categories[state.category].forEach(model=>{
-      const div=document.createElement("div");
-      div.className="choice";
-      div.innerText=model;
-      div.onclick=()=>{
-        state.model=model;
-        state.size=null;
-        state.extras=[];
-        state.step=2;
-        render();
-      };
-      wizard.appendChild(div);
-    });
-
-    addBack();
-  }
-
-  if(state.step===2){
-    wizard.innerHTML="<h2>Select Size</h2>";
-
-    const modelSizes=sizes[state.model]||[{m:"Standard",ft:"Standard"}];
-
-    modelSizes.forEach(s=>{
-      const div=document.createElement("div");
-      div.className="choice";
-      div.innerText= state.currency==="USD"? s.ft : s.m;
-      div.onclick=()=>{
-        state.size= state.currency==="USD"? s.ft : s.m;
-        state.step=3;
-        render();
-      };
-      wizard.appendChild(div);
-    });
-
-    addBack();
-  }
-
-  if(state.step===3){
-    wizard.innerHTML="<h2>Select Accessories</h2>";
-
-    // MOTORSPORT ONLY
-    if(state.category==="motorsport"){
-      const motorsportExtras=[
-        "Mosquito Wall",
-        "Panorama Door",
-        "PVC Motorsport Floor",
-        "Lighting System"
-      ];
-
-      motorsportExtras.forEach(extra=>{
-        const div=document.createElement("div");
-        div.className="choice";
-        div.innerText=extra;
-        div.onclick=()=>{
-          if(state.extras.includes(extra)){
-            state.extras=state.extras.filter(e=>e!==extra);
-            div.classList.remove("selected");
-          } else {
-            state.extras.push(extra);
-            div.classList.add("selected");
-          }
-          updateSummary();
-        };
-        wizard.appendChild(div);
-      });
-    }
-
-    // REGULAR PRODUCTS
-    if(state.category!=="motorsport"){
-      const regularExtras=[
-        "Automatic Pump",
-        "Extra Carry Bag"
-      ];
-
-      regularExtras.forEach(extra=>{
-        const div=document.createElement("div");
-        div.className="choice";
-        div.innerText=extra;
-        div.onclick=()=>{
-          if(state.extras.includes(extra)){
-            state.extras=state.extras.filter(e=>e!==extra);
-            div.classList.remove("selected");
-          } else {
-            state.extras.push(extra);
-            div.classList.add("selected");
-          }
-          updateSummary();
-        };
-        wizard.appendChild(div);
-      });
-    }
-
-    addBack();
-  }
-
-  updateSummary();
-}
-
-function addBack(){
-  const wizard=document.getElementById("wizard");
-  const btn=document.createElement("button");
-  btn.innerText="Back";
-  btn.className="secondary";
-  btn.onclick=()=>{
-    state.step--;
-    render();
-  };
-  wizard.appendChild(btn);
-}
-
-function updateSummary(){
-  const summary=document.getElementById("summary");
-  summary.innerHTML=`
-    Category: ${state.category||""}<br>
-    Model: ${state.model||""}<br>
-    Size: ${state.size||""}<br>
-    Extras: ${state.extras.join(", ")}
-  `;
-  document.getElementById("total").innerText="Estimated Price: (Pricing from Excel will be connected next)";
-}
-
-document.getElementById("currency").onchange=(e)=>{
-  state.currency=e.target.value;
-  render();
+const state = {
+  currency: "USD",
+  step: 0,
+  category: null,
+  model: null,
+  size: null,
+  configId: null,
+  extras: new Set()
 };
 
-render();
+const $ = (id) => document.getElementById(id);
 
+function money(n){
+  const sym = state.currency === "USD" ? "$" : "€";
+  return sym + " " + Number(n||0).toLocaleString(undefined,{maximumFractionDigits:0});
+}
+function units(){
+  return state.currency === "USD" ? "ft" : "m";
+}
+function sizeLabel(sizeObj){
+  return state.currency === "USD" ? sizeObj.ft : sizeObj.m;
+}
+function getSizesForModel(model){
+  return DATA.sizes[model] || DATA.sizes._default;
+}
+function getConfigsForModel(model){
+  return DATA.configs[model] || DATA.configs._default;
+}
+function getExtras(){
+  // Motorsport extras ONLY when category is motorsport
+  return (state.category === "motorsport") ? DATA.motorsportExtras : DATA.regularExtras;
+}
+
+function calcTotal(){
+  const cfg = getConfigsForModel(state.model).find(c => c.id === state.configId);
+  const base = cfg?.price?.[state.currency] || 0;
+  let extras = 0;
+  getExtras().forEach(x => { if(state.extras.has(x.id)) extras += x.price[state.currency] || 0; });
+  return { base, extras, total: base + extras };
+}
+
+function setStep(step){
+  state.step = Math.max(0, Math.min(3, step));
+
+  const titles = [
+    ["Step 1 of 4","Choose a category"],
+    ["Step 2 of 4","Choose a model"],
+    ["Step 3 of 4","Choose a size"],
+    ["Step 4 of 4","Configuration & extras"],
+  ];
+  $("stepTitle").textContent = titles[state.step][0];
+  $("stepSub").textContent = titles[state.step][1];
+  $("stepHint").textContent = state.category === "motorsport" ? "Motorsport extras available" : "";
+
+  $("back").disabled = (state.step === 0);
+  $("back").style.opacity = $("back").disabled ? 0.5 : 1;
+
+  renderPanel();
+  renderSummary();
+}
+
+function renderPanel(){
+  const panel = $("panel");
+  panel.innerHTML = "";
+
+  if(state.step === 0){
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    DATA.categories.forEach(c => {
+      const t = document.createElement("div");
+      t.className = "tile" + (state.category===c.key ? " selected" : "");
+      t.innerHTML = `<b>${c.name}</b><small>Tap to choose</small>`;
+      t.onclick = () => {
+        state.category = c.key;
+        state.model = null; state.size = null; state.configId = null; state.extras = new Set();
+        renderPanel(); renderSummary();
+      };
+      grid.appendChild(t);
+    });
+    panel.appendChild(grid);
+    return;
+  }
+
+  if(state.step === 1){
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    const list = DATA.models[state.category] || [];
+    list.forEach(m => {
+      const t = document.createElement("div");
+      t.className = "tile" + (state.model===m ? " selected" : "");
+      t.innerHTML = `<b>${m}</b><small>Tap to choose</small>`;
+      t.onclick = () => {
+        state.model = m;
+        state.size = null; state.configId = null; state.extras = new Set();
+        renderPanel(); renderSummary();
+      };
+      grid.appendChild(t);
+    });
+    panel.appendChild(grid);
+    return;
+  }
+
+  if(state.step === 2){
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    const list = getSizesForModel(state.model);
+    list.forEach(s => {
+      const t = document.createElement("div");
+      t.className = "tile" + (state.size===s.key ? " selected" : "");
+      t.innerHTML = `<b>${sizeLabel(s)}</b><small>Tap to choose</small>`;
+      t.onclick = () => {
+        state.size = s.key;
+        renderPanel(); renderSummary();
+      };
+      grid.appendChild(t);
+    });
+    panel.appendChild(grid);
+    return;
+  }
+
+  if(state.step === 3){
+    // Config select
+    const cfgBox = document.createElement("div");
+    cfgBox.className = "card";
+    cfgBox.style.background = "rgba(255,255,255,.03)";
+    cfgBox.style.borderRadius = "16px";
+    cfgBox.style.border = "1px solid var(--border)";
+    cfgBox.style.padding = "12px";
+    cfgBox.innerHTML = `<div class="muted" style="margin-bottom:8px;">Configuration</div>`;
+    const sel = document.createElement("select");
+    sel.style.width = "100%";
+    const cfgs = getConfigsForModel(state.model);
+    if(!state.configId) state.configId = cfgs[0]?.id || null;
+    cfgs.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = `${c.label} (${money(c.price[state.currency]||0)})`;
+      sel.appendChild(opt);
+    });
+    sel.value = state.configId;
+    sel.onchange = (e) => { state.configId = e.target.value; renderSummary(); };
+    cfgBox.appendChild(sel);
+    panel.appendChild(cfgBox);
+
+    // Extras
+    const extras = getExtras();
+    const exBox = document.createElement("div");
+    exBox.style.marginTop = "12px";
+    exBox.innerHTML = `<div class="muted" style="margin:8px 0;">Optional extras</div>`;
+
+    extras.forEach(x => {
+      const row = document.createElement("div");
+      row.className = "check";
+      row.innerHTML = `
+        <input type="checkbox" ${state.extras.has(x.id) ? "checked" : ""} />
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;gap:10px;">
+            <div>
+              <b>${x.label}</b>
+              <div class="muted">${x.hint || ""}</div>
+            </div>
+            <div class="price">${money(x.price[state.currency]||0)}</div>
+          </div>
+        </div>
+      `;
+      row.querySelector("input").onchange = (e) => {
+        if(e.target.checked) state.extras.add(x.id); else state.extras.delete(x.id);
+        renderSummary();
+      };
+      exBox.appendChild(row);
+    });
+
+    panel.appendChild(exBox);
+    return;
+  }
+}
+
+function renderSummary(){
+  $("units").textContent = `Units: ${units()}`;
+
+  const s = $("summary");
+  const { base, extras, total } = calcTotal();
+
+  const catName = DATA.categories.find(x=>x.key===state.category)?.name || "—";
+  const model = state.model || "—";
+
+  const sizeObj = getSizesForModel(state.model).find(x=>x.key===state.size) || null;
+  const sizeText = sizeObj ? sizeLabel(sizeObj) : "—";
+
+  const cfg = getConfigsForModel(state.model).find(c => c.id === state.configId);
+  const cfgText = cfg ? cfg.label : "—";
+
+  s.innerHTML = "";
+  const l1 = document.createElement("div");
+  l1.className = "line";
+  l1.innerHTML = `<div><b>${model}</b><div class="muted">${catName}</div><div class="muted">Size: ${sizeText}</div><div class="muted">Config: ${cfgText}</div></div><div class="price">${money(base)}</div>`;
+  s.appendChild(l1);
+
+  if(state.extras.size){
+    getExtras().forEach(x => {
+      if(!state.extras.has(x.id)) return;
+      const l = document.createElement("div");
+      l.className = "line";
+      l.innerHTML = `<div><b>${x.label}</b><div class="muted">${x.hint||""}</div></div><div class="price">${money(x.price[state.currency]||0)}</div>`;
+      s.appendChild(l);
+    });
+  } else {
+    const l = document.createElement("div");
+    l.className = "line";
+    l.innerHTML = `<div><b>No extras selected</b><div class="muted">Optional items available in Step 4</div></div><div class="price">${money(0)}</div>`;
+    s.appendChild(l);
+  }
+
+  $("total").textContent = money(total);
+}
+
+function canNext(){
+  if(state.step === 0) return !!state.category;
+  if(state.step === 1) return !!state.model;
+  if(state.step === 2) return !!state.size;
+  if(state.step === 3) return !!state.configId;
+  return true;
+}
+
+$("currency").addEventListener("change", (e) => {
+  state.currency = e.target.value;
+  renderPanel();
+  renderSummary();
+});
+
+$("reset").addEventListener("click", () => {
+  state.step = 0;
+  state.category = null;
+  state.model = null;
+  state.size = null;
+  state.configId = null;
+  state.extras = new Set();
+  setStep(0);
+});
+
+$("back").addEventListener("click", () => setStep(state.step - 1));
+
+$("next").addEventListener("click", () => {
+  if(!canNext()) return;
+  setStep(state.step + 1);
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  $("currency").value = state.currency;
+  setStep(0);
+});
 </script>
-
 </body>
 </html>
