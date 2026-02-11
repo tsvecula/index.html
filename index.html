@@ -172,7 +172,7 @@
 
 <script>
 /* ========= DATA (placeholder) =========
-   This base is stable. Next step: replace CONFIGS/EXTRAS/PRICES with your Excel-driven JSON.
+   Next step: replace CONFIGS/EXTRAS/PRICES with your Excel-driven JSON.
 */
 const DATA = {
   categories: [
@@ -187,63 +187,64 @@ const DATA = {
     furniture: ["Table","Desk","Seat","Chillout","Donut"],
     motorsport: ["Square Motorsport","ERA X 6060"],
   },
+
   // Sizes shown in the unit system selected
   sizes: {
-    sizes: {
-  Easy: [
-    { key:"33", m:"3.3 × 3.3 m", ft:"10'10\" × 10'10\"" },
-    { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
-    { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
-    { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
-  ],
-  Lite: [
-    { key:"33", m:"3.3 × 3.3 m", ft:"10'10\" × 10'10\"" },
-    { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
-    { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
-    { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
-  ],
-  Square: [
-    { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
-    { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
-    { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
-    { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
-  ],
-  Cube: [
-    { key:"33", m:"3.0 × 3.0 m", ft:"9'10\" × 9'10\"" },
-    { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
-    { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
-  ],
-  Spider: [
-    { key:"8", m:"Ø 8 m", ft:"Ø 26'3\"" },
-    { key:"10", m:"Ø 10 m", ft:"Ø 32'10\"" },
-  ],
-  Tripod: [
-    { key:"5", m:"5 × 5 m", ft:"16'5\" × 16'5\"" },
-    { key:"6", m:"6 × 6 m", ft:"19'8\" × 19'8\"" },
-    { key:"7", m:"7 × 7 m", ft:"23'0\" × 23'0\"" },
-    { key:"8", m:"8 × 8 m", ft:"26'3\" × 26'3\"" },
-    { key:"9", m:"9 × 9 m", ft:"29'6\" × 29'6\"" },
-  ],
-  Hexa: [
-    { key:"44", m:"9.5 × 5.55 m", ft:"31'2\" × 18'0\"" },
-    { key:"55", m:"11.55 × 6.85 m", ft:"37'11\" × 22'6\"" },
-  ],
-  Pod: [
-    { key:"35-35", m:"3.5 × 3.5 m", ft:"11'6\" × 11'6\"" },
-    { key:"40-40", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
-    { key:"50-50", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
-  ],
-  "Square Motorsport": [
-    { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
-    { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
-  ],
-  "ERA X 6060": [
-    { key:"6060", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
-  ],
-  _default: [
-    { key:"std", m:"Standard", ft:"Standard" }
-  ]
-},
+    Easy: [
+      { key:"33", m:"3.3 × 3.3 m", ft:"10'10\" × 10'10\"" },
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+    ],
+    Lite: [
+      { key:"33", m:"3.3 × 3.3 m", ft:"10'10\" × 10'10\"" },
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+    ],
+    Square: [
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+      { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
+    ],
+    Cube: [
+      { key:"33", m:"3.0 × 3.0 m", ft:"9'10\" × 9'10\"" },
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+    ],
+    Spider: [
+      { key:"8", m:"Ø 8 m", ft:"Ø 26'3\"" },
+      { key:"10", m:"Ø 10 m", ft:"Ø 32'10\"" },
+    ],
+    Tripod: [
+      { key:"5", m:"5 × 5 m", ft:"16'5\" × 16'5\"" },
+      { key:"6", m:"6 × 6 m", ft:"19'8\" × 19'8\"" },
+      { key:"7", m:"7 × 7 m", ft:"23'0\" × 23'0\"" },
+      { key:"8", m:"8 × 8 m", ft:"26'3\" × 26'3\"" },
+      { key:"9", m:"9 × 9 m", ft:"29'6\" × 29'6\"" },
+    ],
+    Hexa: [
+      { key:"44", m:"9.5 × 5.55 m", ft:"31'2\" × 18'0\"" },
+      { key:"55", m:"11.55 × 6.85 m", ft:"37'11\" × 22'6\"" },
+    ],
+    Pod: [
+      { key:"35-35", m:"3.5 × 3.5 m", ft:"11'6\" × 11'6\"" },
+      { key:"40-40", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"50-50", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+    ],
+    "Square Motorsport": [
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+      { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
+    ],
+    "ERA X 6060": [
+      { key:"6060", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+    ],
+    _default: [
+      { key:"std", m:"Standard", ft:"Standard" }
+    ]
+  },
+
   // Base configuration options (placeholder)
   configs: {
     _default: [
@@ -251,11 +252,13 @@ const DATA = {
       { id:"CUSTOM", label:"Custom print", price:{ USD: 0, EUR: 0 } },
     ]
   },
+
   // Regular extras (placeholder) – will be replaced by Excel-driven items
   regularExtras: [
     { id:"pump", label:"Automatic air pump", hint:"Optional", price:{ USD:1150, EUR:1150 } },
     { id:"carry", label:"Carry bag", hint:"Transport", price:{ USD:210, EUR:180 } },
   ],
+
   // Motorsport extras (only for Motorsport category)
   motorsportExtras: [
     { id:"mosquito", label:"Rolling wall with mosquito net", hint:"Motorsport", price:{ USD:720, EUR:685 } },
@@ -294,7 +297,6 @@ function getConfigsForModel(model){
   return DATA.configs[model] || DATA.configs._default;
 }
 function getExtras(){
-  // Motorsport extras ONLY when category is motorsport
   return (state.category === "motorsport") ? DATA.motorsportExtras : DATA.regularExtras;
 }
 
@@ -386,7 +388,6 @@ function renderPanel(){
   }
 
   if(state.step === 3){
-    // Config select
     const cfgBox = document.createElement("div");
     cfgBox.className = "card";
     cfgBox.style.background = "rgba(255,255,255,.03)";
@@ -394,22 +395,25 @@ function renderPanel(){
     cfgBox.style.border = "1px solid var(--border)";
     cfgBox.style.padding = "12px";
     cfgBox.innerHTML = `<div class="muted" style="margin-bottom:8px;">Configuration</div>`;
+
     const sel = document.createElement("select");
     sel.style.width = "100%";
     const cfgs = getConfigsForModel(state.model);
     if(!state.configId) state.configId = cfgs[0]?.id || null;
+
     cfgs.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.id;
       opt.textContent = `${c.label} (${money(c.price[state.currency]||0)})`;
       sel.appendChild(opt);
     });
+
     sel.value = state.configId;
     sel.onchange = (e) => { state.configId = e.target.value; renderSummary(); };
+
     cfgBox.appendChild(sel);
     panel.appendChild(cfgBox);
 
-    // Extras
     const extras = getExtras();
     const exBox = document.createElement("div");
     exBox.style.marginTop = "12px";
@@ -446,7 +450,7 @@ function renderSummary(){
   $("units").textContent = `Units: ${units()}`;
 
   const s = $("summary");
-  const { base, extras, total } = calcTotal();
+  const { base, total } = calcTotal();
 
   const catName = DATA.categories.find(x=>x.key===state.category)?.name || "—";
   const model = state.model || "—";
@@ -458,6 +462,7 @@ function renderSummary(){
   const cfgText = cfg ? cfg.label : "—";
 
   s.innerHTML = "";
+
   const l1 = document.createElement("div");
   l1.className = "line";
   l1.innerHTML = `<div><b>${model}</b><div class="muted">${catName}</div><div class="muted">Size: ${sizeText}</div><div class="muted">Config: ${cfgText}</div></div><div class="price">${money(base)}</div>`;
@@ -519,4 +524,3 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
-
