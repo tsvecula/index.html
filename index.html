@@ -856,14 +856,35 @@ function setStep(n){
   });
   renderDots();
 
+  // ---- AUTO DEFAULTS (prevents Next from being disabled) ----
+if (!state.categoryKey) state.categoryKey = "tents";
+
+if (state.categoryKey && !state.modelKey) {
+  const firstModel = MODELS[state.categoryKey]?.[0]?.key;
+  if (firstModel) state.modelKey = firstModel;
+}
+
+if (state.modelKey && !state.sizeKey) {
+  const firstSize = SIZES[state.modelKey]?.[0]?.key;
+  if (firstSize) state.sizeKey = firstSize;
+}
+
+if (state.modelKey && !state.configId) {
+  const firstCfg = configsFor(state.modelKey)?.[0]?.id;
+  if (firstCfg) state.configId = firstCfg;
+}
+// -----------------------------------------------------------
+
+
   // button states
   qs("backBtn").disabled = state.step === 0;
   qs("backBtn").style.opacity = state.step === 0 ? 0.5 : 1;
 
   const canNext = canGoNext();
   qs("nextBtn").textContent = state.step === 4 ? "Finish" : "Next";
-  qs("nextBtn").disabled = !canNext && state.step !== 4;
-  qs("nextBtn").style.opacity = (!canNext && state.step !== 4) ? 0.5 : 1;
+  qs("nextBtn").disabled = false;
+  qs("nextBtn").style.opacity = 1;
+
 
   // ensure data exists on step transitions
   if (state.step === 0) renderCategories();
@@ -1262,3 +1283,4 @@ setStep(state.step);
 </script>
 </body>
 </html>
+
