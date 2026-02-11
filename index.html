@@ -568,52 +568,49 @@ function configsFor(modelKey){
 }
 
 // extras: shown after size selection, tick to add
-function extrasFor(categoryKey, modelKey, sizeKey){
-  // Keep it simple for Americans: few groups, clear labels
-  const common = [
-    { id:"pump", label:"Automatic air pump", hint:"Recommended for faster setup", price:{ EUR: 1150, USD: 1150 } },
-    { id:"carry", label:"Extra carry bag", hint:"Backup transport bag", price:{ EUR: 180, USD: 210 } },
-  ];
+  function extrasFor(categoryKey, modelKey, sizeKey){
 
-  const lighting = [
-    { id:"illum_white", label:"Internal illumination (white)", hint:"Night visibility", price:{ EUR: 420, USD: 480 } },
-    { id:"illum_rgb", label:"Internal illumination (RGB)", hint:"Color effects", price:{ EUR: 520, USD: 590 } },
-  ];
-
-  const ballast = [
-    { id:"ballast_plate", label:"Ballast plate", hint:"Better stability on hard surface", price:{ EUR: 240, USD: 280 } },
-    { id:"ballast_bag", label:"Ballast water bag", hint:"Portable weight", price:{ EUR: 95, USD: 120 } },
-  ];
-
-  const motorsport = [
-    { id:"mosquito", label:"Rolling wall with mosquito net", hint:"Service tent comfort", perSize:{
-      "66":{ EUR:685, USD:720 }, "77":{ EUR:730, USD:770 }, "6060":{ EUR:700, USD:750 }
-    }},
-    { id:"window", label:"Wall with removable window", hint:"Better airflow control", perSize:{
-      "66":{ EUR:350, USD:385 }, "77":{ EUR:420, USD:460 }, "6060":{ EUR:390, USD:420 }
-    }},
-    { id:"panorama", label:"Panorama door (car access)", hint:"2×3m opening", perSize:{
-      "66":{ EUR:430, USD:475 }, "77":{ EUR:490, USD:540 }, "6060":{ EUR:460, USD:510 }
-    }},
-    { id:"floor", label:"PVC silver floor", hint:"Motorsport floor", perSize:{
-      "66":{ EUR:1255, USD:1360 }, "77":{ EUR:1375, USD:1490 }, "6060":{ EUR:1290, USD:1400 }
-    }},
-    { id:"floor_car", label:"PVC silver floor + car spacer + printing", hint:"Premium paddock look", perSize:{
-      "66":{ EUR:1495, USD:1620 }, "77":{ EUR:1615, USD:1750 }, "6060":{ EUR:1540, USD:1670 }
-    }},
-    { id:"light_system", label:"Built-in lighting system (12 lights)", hint:"Undercarriage lighting", perSize:{
-      "66":{ EUR:2150, USD:2320 }, "77":{ EUR:2230, USD:2410 }, "6060":{ EUR:2190, USD:2380 }
-    }},
-  ];
-
-  // group logic
   const groups = [];
 
-  // tents: show common + lighting; motorsport group for motorsport category or square variants
-  if (["easy","lite","square","cube","cube_lite","spider","tripod","hexa","pod"].includes(modelKey)){
-    groups.push({ name:"Recommended", items: common });
-    groups.push({ name:"Lighting", items: lighting });
+  // Motorsport-only models
+  const isMotorsportModel = (modelKey === "square_ms" || modelKey === "era6060");
+
+  if (isMotorsportModel) {
+    groups.push({
+      name: "Motorsport extras",
+      items: [
+        { id:"mosquito", label:"Rolling wall with mosquito net", perSize:{
+          "66":{ EUR:685, USD:720 },
+          "77":{ EUR:730, USD:770 },
+          "6060":{ EUR:700, USD:750 }
+        }},
+        { id:"panorama", label:"Panorama door (car access)", perSize:{
+          "66":{ EUR:430, USD:475 },
+          "77":{ EUR:490, USD:540 },
+          "6060":{ EUR:460, USD:510 }
+        }},
+        { id:"floor", label:"PVC silver floor", perSize:{
+          "66":{ EUR:1255, USD:1360 },
+          "77":{ EUR:1375, USD:1490 },
+          "6060":{ EUR:1290, USD:1400 }
+        }}
+      ]
+    });
+
+    return groups;
   }
+
+  // All regular products (Tents, Shapes, Furniture)
+  groups.push({
+    name: "Accessories",
+    items: [
+      { id:"pump", label:"Automatic air pump", hint:"Optional", price:{ EUR:1150, USD:1150 } },
+      { id:"carry", label:"Carry bag", hint:"Transport bag", price:{ EUR:180, USD:210 } }
+    ]
+  });
+
+  return groups;
+}
 
   // shapes: ballast + lighting
   if (["arch_angled","arch_rounded","arch_rect","arch_zip","tube","can","bottle","block","frame","wall","float","podium"].includes(modelKey)){
@@ -1285,5 +1282,6 @@ setStep(state.step);
 </script>
 </body>
 </html>
+
 
 
