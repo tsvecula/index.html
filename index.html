@@ -3,278 +3,274 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AXION Configurator – Prototype</title>
+  <title>AXION Configurator (Clean Base)</title>
   <style>
     :root{
-      --bg:#0b1220; --card:#121b2f; --muted:#8ea3c7; --text:#e8f0ff;
-      --accent:#56c2ff; --accent2:#7cffb4; --danger:#ff6b6b;
-      --border:rgba(255,255,255,.08);
+      --bg:#0b1220;
+      --card:#111a30;
+      --border:rgba(255,255,255,.10);
+      --text:#eef4ff;
+      --muted:#9bb0d0;
+      --accent:#52bfff;
+      --accent2:#6dffb0;
     }
-    body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 20% 0%, rgba(86,194,255,.18), transparent 60%),
-                  radial-gradient(900px 700px at 90% 10%, rgba(124,255,180,.14), transparent 55%),
-                  var(--bg);
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1100px 700px at 15% 0%, rgba(82,191,255,.18), transparent 55%),
+        radial-gradient(900px 650px at 90% 15%, rgba(109,255,176,.12), transparent 55%),
+        var(--bg);
       color:var(--text);
+      padding:22px 14px 70px;
     }
-    .wrap{ max-width:1040px; margin:0 auto; padding:22px 14px 60px; }
-    header{ display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; }
-    .brand{ display:flex; align-items:center; gap:10px; }
-    .logo{ width:42px; height:42px; border-radius:14px; background: linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow: 0 10px 30px rgba(86,194,255,.18); }
-    h1{ font-size:18px; margin:0; letter-spacing:.2px; }
-    .sub{ margin:0; color:var(--muted); font-size:13px; }
-    .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .chip{ display:inline-flex; gap:8px; align-items:center; padding:10px 12px; border:1px solid var(--border); background:rgba(255,255,255,.03); border-radius:14px; }
-    select, button, input{
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 14px;
+    .wrap{ max-width:1100px; margin:0 auto; }
+    .top{
+      display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, rgba(82,191,255,.95), rgba(109,255,176,.9));
+      box-shadow: 0 14px 40px rgba(82,191,255,.18);
+    }
+    h1{ margin:0; font-size:18px; letter-spacing:.2px; }
+    .sub{ margin:2px 0 0; color:var(--muted); font-size:13px; }
+    .chip{
+      display:flex; gap:10px; align-items:center;
+      padding:10px 12px; border:1px solid var(--border); border-radius:16px;
+      background:rgba(255,255,255,.03);
+    }
+    select, button{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:14px;
       outline:none;
     }
     button{ cursor:pointer; }
-    button.primary{ background: linear-gradient(135deg, rgba(86,194,255,.25), rgba(124,255,180,.18));
-      border-color: rgba(86,194,255,.25);
+    button.primary{
+      background: linear-gradient(135deg, rgba(82,191,255,.25), rgba(109,255,176,.15));
+      border-color: rgba(82,191,255,.25);
     }
     button.ghost{ background:transparent; }
-    .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; }
-    @media (max-width: 920px){ .grid{ grid-template-columns:1fr; } }
-    .card{ background: rgba(18,27,47,.85); border:1px solid var(--border); border-radius:18px; padding:14px; box-shadow: 0 18px 50px rgba(0,0,0,.25); }
-    .card h2{ margin:0 0 10px; font-size:15px; }
-    .row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    @media (max-width: 520px){ .row{ grid-template-columns:1fr; } }
-    .label{ font-size:12px; color:var(--muted); margin: 2px 0 6px; }
+    .layout{ display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; }
+    @media (max-width: 940px){ .layout{ grid-template-columns:1fr; } }
+    .card{
+      background: rgba(17,26,48,.92);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.30);
+    }
+    .head{
+      display:flex; justify-content:space-between; gap:12px; align-items:center;
+      padding-bottom:10px; border-bottom:1px solid var(--border); margin-bottom:12px;
+    }
+    .stepTitle{ margin:0; font-size:15px; }
     .muted{ color:var(--muted); font-size:13px; }
-    .divider{ height:1px; background:var(--border); margin:12px 0; }
-    .list{ display:flex; flex-direction:column; gap:10px; }
-    .item{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; padding:10px; border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.02); }
-    .item small{ color:var(--muted); display:block; margin-top:2px; }
-    .pill{ display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.03); font-size:13px; }
-    .price{ font-weight:700; }
-    .total{ font-size:24px; font-weight:800; letter-spacing:.3px; }
-    .warn{ color: #ffd37a; }
-    .ok{ color: var(--accent2); }
-    .danger{ color: var(--danger); }
-    .checkboxes{ display:flex; flex-direction:column; gap:8px; margin-top:6px; }
-    .checkrow{ display:flex; gap:10px; align-items:flex-start; }
-    .checkrow input{ margin-top:2px; }
-    code.k{ background:rgba(255,255,255,.06); padding:2px 6px; border-radius:8px; border:1px solid var(--border); }
+    .grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; }
+    @media (max-width: 520px){ .grid{ grid-template-columns:1fr; } }
+    .tile{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:12px;
+      cursor:pointer;
+      transition: .12s ease;
+    }
+    .tile:hover{ border-color: rgba(82,191,255,.35); transform: translateY(-1px); }
+    .tile.selected{ border-color: rgba(82,191,255,.55); box-shadow: 0 0 0 5px rgba(82,191,255,.08); }
+    .tile b{ display:block; font-size:14px; }
+    .tile small{ display:block; margin-top:3px; color:var(--muted); }
+    .btnRow{ display:flex; justify-content:space-between; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .line{
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+      padding:10px; border:1px solid var(--border); border-radius:16px;
+      background:rgba(255,255,255,.03);
+      margin-bottom:10px;
+    }
+    .total{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:14px; border-radius:18px;
+      border:1px solid rgba(82,191,255,.25);
+      background: linear-gradient(135deg, rgba(82,191,255,.10), rgba(109,255,176,.06));
+      font-weight:900; font-size:22px;
+    }
+    .note{
+      margin-top:10px; color:var(--muted); font-size:12px; line-height:1.35;
+    }
+    .check{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px; border-radius:14px;
+    }
+    .check:hover{ background:rgba(255,255,255,.03); }
+    .price{ font-weight:800; white-space:nowrap; }
   </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
+  <div class="top">
     <div class="brand">
       <div class="logo"></div>
       <div>
-        <h1>AXION Configurator – Prototype</h1>
-        <p class="sub">Prototype flow for QR configurator (Category → Product → Size → Extras → Estimate)</p>
+        <h1>AXION Configurator</h1>
+        <div class="sub">Clean base build (stable). Next step: connect Excel pricing.</div>
       </div>
     </div>
 
-    <div class="toolbar">
-      <div class="chip">
-        <span class="muted">Currency</span>
-        <select id="currency">
-          <option value="EUR">€ EUR</option>
-          <option value="USD">$ USD</option>
-        </select>
-      </div>
-
-      <button id="copyLink" class="ghost">Copy link</button>
+    <div class="chip">
+      <span class="muted">Currency</span>
+      <select id="currency">
+        <option value="USD">$ USD (ft)</option>
+        <option value="EUR">€ EUR (m)</option>
+      </select>
       <button id="reset" class="ghost">Reset</button>
     </div>
-  </header>
+  </div>
 
-  <div class="grid">
+  <div class="layout">
     <div class="card">
-      <h2>1) Choose product</h2>
-
-      <div class="row">
+      <div class="head">
         <div>
-          <div class="label">Category</div>
-          <select id="category"></select>
+          <h2 class="stepTitle" id="stepTitle">Step 1 of 4</h2>
+          <div class="muted" id="stepSub">Choose a category</div>
         </div>
-        <div>
-          <div class="label">Model</div>
-          <select id="model"></select>
-        </div>
+        <div class="muted" id="stepHint"></div>
       </div>
 
-      <div class="row" style="margin-top:10px;">
-        <div>
-          <div class="label">Size</div>
-          <select id="size"></select>
-        </div>
-        <div>
-          <div class="label">Configuration</div>
-          <select id="config"></select>
-        </div>
-      </div>
+      <div id="panel"></div>
 
-      <div class="divider"></div>
-
-      <h2>2) Extras</h2>
-      <p class="muted">Extras shown here depend on the selected product. Motorsport extras appear for motorsport tents.</p>
-
-      <div id="extras"></div>
-
-      <div class="divider"></div>
-
-      <h2>Notes / Behavior</h2>
-      <div class="muted">
-        <ul>
-          <li>Prices are placeholders now. Next step is mapping your Excel price lists into the <code class="k">DATA</code> object.</li>
-          <li>The URL stores selections so you can create QR codes like <code class="k">.../index.html?c=Motorsport&m=Square&s=66</code></li>
-        </ul>
+      <div class="btnRow">
+        <button id="back" class="ghost">Back</button>
+        <button id="next" class="primary">Next</button>
       </div>
     </div>
 
     <div class="card">
-      <h2>Estimate</h2>
-      <div class="list" id="summary"></div>
-
-      <div class="divider"></div>
-
-      <div class="item">
-        <div>
-          <div class="muted">Total estimate</div>
-          <div class="muted" style="margin-top:4px;">
-            <span class="warn">Prototype:</span> totals change once we connect real lists.
-          </div>
-        </div>
-        <div class="total" id="total">—</div>
+      <div class="head">
+        <b>Summary</b>
+        <span class="muted" id="units">Units: ft</span>
       </div>
 
-      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="primary" id="export">Export config (JSON)</button>
-        <button class="ghost" id="quote">Request quote (stub)</button>
+      <div id="summary"></div>
+
+      <div class="total">
+        <div>Estimated total</div>
+        <div id="total">$ 0</div>
       </div>
 
-      <div class="divider"></div>
-
-      <div class="muted">
-        <div class="pill">Next: connect Excel → JSON price tables</div>
-        <p style="margin-top:8px;">
-          Once you confirm the flow, I’ll wire in your EUR + US price lists so the currency switch pulls official values.
-        </p>
+      <div class="note">
+        Free 3D mockup available on request. Delivery fee depends on destination and shipment method.
       </div>
     </div>
   </div>
 </div>
 
 <script>
-/**
- * PROTOTYPE DATA
- * Replace placeholder pricing with your EUR and US Excel list values.
- * We will later generate this DATA automatically from your .xlsx files.
- */
+/* ========= DATA (placeholder) =========
+   Next step: replace CONFIGS/EXTRAS/PRICES with your Excel-driven JSON.
+*/
 const DATA = {
-  categories: {
-    "Event Tents": {
-      models: {
-        "Lite": {
-          sizes: ["33","44","55","66"],
-          configs: [
-            { id:"WHITE", label:"White / no walls", price: { EUR: 2400, USD: 2435 } },
-            { id:"CUSTOM_2W", label:"Custom design + 2 printed walls", price: { EUR: 3300, USD: 3325 } },
-          ],
-          extras: {
-            general: [
-              { id:"PUMP_AUTO", label:"Automatic air pump", hint:"Optional", price: { EUR: 1150, USD: 1150 } },
-            ],
-          }
-        },
+  categories: [
+    { key:"tents", name:"Tents" },
+    { key:"shapes", name:"Shapes" },
+    { key:"furniture", name:"Furniture" },
+    { key:"motorsport", name:"Motorsport" },
+  ],
+  models: {
+    tents: ["Easy","Lite","Square","Cube","Spider","Tripod","Hexa","Pod"],
+    shapes: ["Arch","Tube","Can","Bottle","Block","Wall","Float","Podium"],
+    furniture: ["Table","Desk","Seat","Chillout","Donut"],
+    motorsport: ["Square Motorsport","ERA X 6060"],
+  },
 
-        "Cube": {
-          sizes: ["33","44","55"],
-          configs: [
-            { id:"WHITE_2W", label:"White + 2 sidewalls", price: { EUR: 5575, USD: 5600 } },
-            { id:"CUSTOM_3W", label:"Custom design + 3 printed walls", price: { EUR: 6530, USD: 6550 } },
-          ],
-          extras: { general: [] }
-        },
+  // Sizes shown in the unit system selected
+  sizes: {
+    Easy: [
+      { key:"33", m:"3.3 × 3.3 m", ft:"10'10\" × 10'10\"" },
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+    ],
+    Lite: [
+      { key:"33", m:"3.3 × 3.3 m", ft:"10'10\" × 10'10\"" },
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+    ],
+    Square: [
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+      { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
+    ],
+    Cube: [
+      { key:"33", m:"3.0 × 3.0 m", ft:"9'10\" × 9'10\"" },
+      { key:"44", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"55", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+    ],
+    Spider: [
+      { key:"8", m:"Ø 8 m", ft:"Ø 26'3\"" },
+      { key:"10", m:"Ø 10 m", ft:"Ø 32'10\"" },
+    ],
+    Tripod: [
+      { key:"5", m:"5 × 5 m", ft:"16'5\" × 16'5\"" },
+      { key:"6", m:"6 × 6 m", ft:"19'8\" × 19'8\"" },
+      { key:"7", m:"7 × 7 m", ft:"23'0\" × 23'0\"" },
+      { key:"8", m:"8 × 8 m", ft:"26'3\" × 26'3\"" },
+      { key:"9", m:"9 × 9 m", ft:"29'6\" × 29'6\"" },
+    ],
+    Hexa: [
+      { key:"44", m:"9.5 × 5.55 m", ft:"31'2\" × 18'0\"" },
+      { key:"55", m:"11.55 × 6.85 m", ft:"37'11\" × 22'6\"" },
+    ],
+    Pod: [
+      { key:"35-35", m:"3.5 × 3.5 m", ft:"11'6\" × 11'6\"" },
+      { key:"40-40", m:"4.0 × 4.0 m", ft:"13'1\" × 13'1\"" },
+      { key:"50-50", m:"5.0 × 5.0 m", ft:"16'5\" × 16'5\"" },
+    ],
+    "Square Motorsport": [
+      { key:"66", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+      { key:"77", m:"7.0 × 7.0 m", ft:"23'0\" × 23'0\"" },
+    ],
+    "ERA X 6060": [
+      { key:"6060", m:"6.0 × 6.0 m", ft:"19'8\" × 19'8\"" },
+    ],
+    _default: [
+      { key:"std", m:"Standard", ft:"Standard" }
+    ]
+  },
 
-        "Square": {
-          sizes: ["66","77"],
-          configs: [
-            { id:"WHITE", label:"White / no walls", price: { EUR: 5600, USD: 5579 } },
-            { id:"CUSTOM_2W", label:"Custom design + 2 printed walls", price: { EUR: 7650, USD: 7647 } },
-          ],
-          extras: {
-            motorsport: [
-              // These are based on your motorsport extras doc in EUR; USD is placeholder for now.
-              { id:"MOSQUITO_WALL", label:"Rolling wall with mosquito net", hint:"Per tent", price: { EUR: 685, USD: 700 }, perSize: { "66": { EUR: 685, USD: 700 }, "77": { EUR: 730, USD: 750 } } },
-              { id:"SHADING_HALF", label:"Shading half wall", hint:"Per wall", price: { EUR: 190, USD: 200 }, perSize: { "66": { EUR: 190, USD: 200 }, "77": { EUR: 205, USD: 215 } } },
-              { id:"REM_WINDOW", label:"Wall with removable window", hint:"Per wall", price: { EUR: 350, USD: 365 }, perSize: { "66": { EUR: 350, USD: 365 }, "77": { EUR: 420, USD: 438 } } },
-              { id:"PANORAMA_DOOR", label:"Panorama wall with rolling door (car access)", hint:"2×3m opening", price: { EUR: 430, USD: 450 }, perSize: { "66": { EUR: 430, USD: 450 }, "77": { EUR: 490, USD: 515 } } },
-              { id:"LIGHT_SYSTEM", label:"Built-in wiring loom + lighting system (12 lights)", hint:"Undercarriage lighting", price: { EUR: 2150, USD: 2200 }, perSize: { "66": { EUR: 2150, USD: 2200 }, "77": { EUR: 2230, USD: 2300 } } },
-              { id:"AMBIENT_POINTS", label:"Ambient mounting points on structure", hint:"For installing your own lights", price: { EUR: 160, USD: 165 } },
-              { id:"PVC_FLOOR", label:"Special PVC silver floor", hint:"Motorsport floor", price: { EUR: 1255, USD: 1300 }, perSize: { "66": { EUR: 1255, USD: 1300 }, "77": { EUR: 1375, USD: 1420 } } },
-              { id:"PVC_FLOOR_CAR", label:"PVC silver floor + car spacer + printing", hint:"Motorsport premium floor", price: { EUR: 1495, USD: 1550 }, perSize: { "66": { EUR: 1495, USD: 1550 }, "77": { EUR: 1615, USD: 1680 } } },
-              { id:"TOP_HOSE_SET", label:"Top hose set (4 legs connection)", hint:"Needed for automatic pump usage", price: { EUR: 150, USD: 155 }, perSize: { "66": { EUR: 150, USD: 155 }, "77": { EUR: 150, USD: 155 } } },
-              { id:"CHAIR", label:"Foldable chair", hint:"Equipment", price: { EUR: 35, USD: 39 } },
-              { id:"FLEXI_TABLE", label:"Foldable Flexi table", hint:"Equipment", price: { EUR: 175, USD: 189 } },
-            ],
-            general: [
-              { id:"TUNNEL", label:"Connection tunnel (placeholder)", hint:"We’ll add pricing rules later", price: { EUR: 0, USD: 0 } },
-            ]
-          }
-        },
+  // Base configuration options (placeholder)
+  configs: {
+    _default: [
+      { id:"WHITE", label:"White / standard", price:{ USD: 0, EUR: 0 } },
+      { id:"CUSTOM", label:"Custom print", price:{ USD: 0, EUR: 0 } },
+    ]
+  },
 
-        "Spider": {
-          sizes: ["8","10"],
-          configs: [
-            { id:"WHITE", label:"White / no walls", price: { EUR: 8200, USD: 8212 } },
-            { id:"CUSTOM_3W", label:"Custom design + 3 printed walls", price: { EUR: 10750, USD: 10769 } },
-          ],
-          extras: { general: [] }
-        }
-      }
-    },
+  // Regular extras (placeholder) – will be replaced by Excel-driven items
+  regularExtras: [
+    { id:"pump", label:"Automatic air pump", hint:"Optional", price:{ USD:1150, EUR:1150 } },
+    { id:"carry", label:"Carry bag", hint:"Transport", price:{ USD:210, EUR:180 } },
+  ],
 
-    "Inflatable Shapes": {
-      models: {
-        "Angled Arch": {
-          sizes: ["4m","5m","6m","8m","10m","12m"],
-          configs: [
-            { id:"BASE", label:"Standard (base)", price: { EUR: 2800, USD: 2626 } }
-          ],
-          extras: { general: [
-            { id:"BALLAST", label:"Ballast plate (placeholder)", hint:"Stability", price: { EUR: 0, USD: 0 } },
-            { id:"ILLUM", label:"Internal illumination (placeholder)", hint:"White/RGB", price: { EUR: 0, USD: 0 } },
-          ]}
-        },
-        "Tube": {
-          sizes: ["2.5m","3m","4m","5m"],
-          configs: [
-            { id:"BASE", label:"Standard (base)", price: { EUR: 1400, USD: 1339 } }
-          ],
-          extras: { general: [
-            { id:"SOCK_EXTRA", label:"Extra zip-off sock (placeholder)", hint:"Fast branding change", price: { EUR: 0, USD: 0 } },
-          ]}
-        }
-      }
-    },
-
-    "Motorsport Solutions": {
-      models: {
-        "Square (Motorsport)": {
-          aliasModel: "Square",
-          sizes: ["66","77"],
-          configsFromModel: "Square",
-          forceMotorsportExtras: true
-        }
-      }
-    }
-  }
+  // Motorsport extras (only for Motorsport category)
+  motorsportExtras: [
+    { id:"mosquito", label:"Rolling wall with mosquito net", hint:"Motorsport", price:{ USD:720, EUR:685 } },
+    { id:"panorama", label:"Panorama door (car access)", hint:"Motorsport", price:{ USD:475, EUR:430 } },
+    { id:"floor", label:"PVC silver floor", hint:"Motorsport", price:{ USD:1360, EUR:1255 } },
+    { id:"light", label:"Built-in lighting system", hint:"Motorsport", price:{ USD:2320, EUR:2150 } },
+  ]
 };
 
-// -------------------- APP LOGIC --------------------
-const qs = (id) => document.getElementById(id);
 const state = {
-  currency: "EUR",
+  currency: "USD",
+  step: 0,
   category: null,
   model: null,
   size: null,
@@ -282,320 +278,249 @@ const state = {
   extras: new Set()
 };
 
-function money(n, currency){
-  if (n === null || n === undefined) return "—";
-  const sym = currency === "EUR" ? "€" : "$";
-  // simple formatting
-  return sym + " " + Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+const $ = (id) => document.getElementById(id);
+
+function money(n){
+  const sym = state.currency === "USD" ? "$" : "€";
+  return sym + " " + Number(n||0).toLocaleString(undefined,{maximumFractionDigits:0});
+}
+function units(){
+  return state.currency === "USD" ? "ft" : "m";
+}
+function sizeLabel(sizeObj){
+  return state.currency === "USD" ? sizeObj.ft : sizeObj.m;
+}
+function getSizesForModel(model){
+  return DATA.sizes[model] || DATA.sizes._default;
+}
+function getConfigsForModel(model){
+  return DATA.configs[model] || DATA.configs._default;
+}
+function getExtras(){
+  return (state.category === "motorsport") ? DATA.motorsportExtras : DATA.regularExtras;
 }
 
-function getModelDef(categoryName, modelName){
-  const cat = DATA.categories[categoryName];
-  if (!cat) return null;
-  const def = cat.models[modelName];
-  if (!def) return null;
-
-  // alias model (Motorsport solutions)
-  if (def.aliasModel){
-    const baseCat = DATA.categories["Event Tents"];
-    const base = baseCat.models[def.aliasModel];
-    return { ...base, _motorsportOverride: def };
-  }
-  return def;
+function calcTotal(){
+  const cfg = getConfigsForModel(state.model).find(c => c.id === state.configId);
+  const base = cfg?.price?.[state.currency] || 0;
+  let extras = 0;
+  getExtras().forEach(x => { if(state.extras.has(x.id)) extras += x.price[state.currency] || 0; });
+  return { base, extras, total: base + extras };
 }
 
-function getConfigOptions(modelDef){
-  if (modelDef.configsFromModel){
-    // not used in this prototype
-  }
-  return modelDef.configs || [];
+function setStep(step){
+  state.step = Math.max(0, Math.min(3, step));
+
+  const titles = [
+    ["Step 1 of 4","Choose a category"],
+    ["Step 2 of 4","Choose a model"],
+    ["Step 3 of 4","Choose a size"],
+    ["Step 4 of 4","Configuration & extras"],
+  ];
+  $("stepTitle").textContent = titles[state.step][0];
+  $("stepSub").textContent = titles[state.step][1];
+  $("stepHint").textContent = state.category === "motorsport" ? "Motorsport extras available" : "";
+
+  $("back").disabled = (state.step === 0);
+  $("back").style.opacity = $("back").disabled ? 0.5 : 1;
+
+  renderPanel();
+  renderSummary();
 }
 
-function getSizeOptions(modelDef){
-  return modelDef.sizes || [];
-}
+function renderPanel(){
+  const panel = $("panel");
+  panel.innerHTML = "";
 
-function resolveExtraPrice(extra, size, currency){
-  if (extra.perSize && extra.perSize[size] && extra.perSize[size][currency] != null){
-    return extra.perSize[size][currency];
-  }
-  return extra.price?.[currency] ?? 0;
-}
-
-function getExtrasFor(modelDef, categoryName){
-  const ex = [];
-  const isMotorsportCategory = categoryName === "Motorsport Solutions";
-  const forceMotorsport = modelDef._motorsportOverride?.forceMotorsportExtras;
-
-  if (modelDef.extras?.general?.length) ex.push({ group:"General", items: modelDef.extras.general });
-
-  const motorsportItems = modelDef.extras?.motorsport || [];
-  if (motorsportItems.length && (isMotorsportCategory || forceMotorsport || modelDef === DATA.categories["Event Tents"].models["Square"])){
-    ex.push({ group:"Motorsport extras", items: motorsportItems });
-  }
-  return ex;
-}
-
-function populate(){
-  // currency
-  qs("currency").value = state.currency;
-
-  // categories
-  const catSel = qs("category");
-  catSel.innerHTML = "";
-  Object.keys(DATA.categories).forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c; opt.textContent = c;
-    catSel.appendChild(opt);
-  });
-
-  if (!state.category) state.category = Object.keys(DATA.categories)[0];
-  catSel.value = state.category;
-
-  // models
-  const modelSel = qs("model");
-  modelSel.innerHTML = "";
-  const models = Object.keys(DATA.categories[state.category].models);
-  models.forEach(m => {
-    const opt = document.createElement("option");
-    opt.value = m; opt.textContent = m;
-    modelSel.appendChild(opt);
-  });
-
-  if (!state.model || !models.includes(state.model)) state.model = models[0];
-  modelSel.value = state.model;
-
-  const modelDef = getModelDef(state.category, state.model);
-
-  // sizes
-  const sizeSel = qs("size");
-  sizeSel.innerHTML = "";
-  const sizes = getSizeOptions(modelDef);
-  sizes.forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s; opt.textContent = s;
-    sizeSel.appendChild(opt);
-  });
-  if (!state.size || !sizes.includes(state.size)) state.size = sizes[0];
-  sizeSel.value = state.size;
-
-  // configs
-  const cfgSel = qs("config");
-  cfgSel.innerHTML = "";
-  const cfgs = getConfigOptions(modelDef);
-  cfgs.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c.id;
-    opt.textContent = c.label;
-    cfgSel.appendChild(opt);
-  });
-  if (!state.configId || !cfgs.some(x => x.id === state.configId)) state.configId = cfgs[0]?.id ?? null;
-  cfgSel.value = state.configId;
-
-  // extras render
-  renderExtras(modelDef);
-  renderSummary(modelDef);
-  syncUrl();
-}
-
-function renderExtras(modelDef){
-  const wrap = qs("extras");
-  wrap.innerHTML = "";
-
-  const groups = getExtrasFor(modelDef, state.category);
-
-  if (!groups.length){
-    wrap.innerHTML = `<div class="item"><div><b>No extras</b><small class="muted">This model currently has no extras in prototype data.</small></div></div>`;
+  if(state.step === 0){
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    DATA.categories.forEach(c => {
+      const t = document.createElement("div");
+      t.className = "tile" + (state.category===c.key ? " selected" : "");
+      t.innerHTML = `<b>${c.name}</b><small>Tap to choose</small>`;
+      t.onclick = () => {
+        state.category = c.key;
+        state.model = null; state.size = null; state.configId = null; state.extras = new Set();
+        renderPanel(); renderSummary();
+      };
+      grid.appendChild(t);
+    });
+    panel.appendChild(grid);
     return;
   }
 
-  groups.forEach(g => {
-    const box = document.createElement("div");
-    box.className = "card";
-    box.style.padding = "12px";
-    box.style.marginBottom = "10px";
-    box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;">
-      <b>${g.group}</b><span class="muted">Select optional items</span></div>`;
+  if(state.step === 1){
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    const list = DATA.models[state.category] || [];
+    list.forEach(m => {
+      const t = document.createElement("div");
+      t.className = "tile" + (state.model===m ? " selected" : "");
+      t.innerHTML = `<b>${m}</b><small>Tap to choose</small>`;
+      t.onclick = () => {
+        state.model = m;
+        state.size = null; state.configId = null; state.extras = new Set();
+        renderPanel(); renderSummary();
+      };
+      grid.appendChild(t);
+    });
+    panel.appendChild(grid);
+    return;
+  }
 
-    const list = document.createElement("div");
-    list.className = "checkboxes";
+  if(state.step === 2){
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    const list = getSizesForModel(state.model);
+    list.forEach(s => {
+      const t = document.createElement("div");
+      t.className = "tile" + (state.size===s.key ? " selected" : "");
+      t.innerHTML = `<b>${sizeLabel(s)}</b><small>Tap to choose</small>`;
+      t.onclick = () => {
+        state.size = s.key;
+        renderPanel(); renderSummary();
+      };
+      grid.appendChild(t);
+    });
+    panel.appendChild(grid);
+    return;
+  }
 
-    g.items.forEach(it => {
-      const id = `${g.group}__${it.id}`;
-      const checked = state.extras.has(it.id);
+  if(state.step === 3){
+    const cfgBox = document.createElement("div");
+    cfgBox.className = "card";
+    cfgBox.style.background = "rgba(255,255,255,.03)";
+    cfgBox.style.borderRadius = "16px";
+    cfgBox.style.border = "1px solid var(--border)";
+    cfgBox.style.padding = "12px";
+    cfgBox.innerHTML = `<div class="muted" style="margin-bottom:8px;">Configuration</div>`;
 
-      const price = resolveExtraPrice(it, state.size, state.currency);
+    const sel = document.createElement("select");
+    sel.style.width = "100%";
+    const cfgs = getConfigsForModel(state.model);
+    if(!state.configId) state.configId = cfgs[0]?.id || null;
 
-      const row = document.createElement("label");
-      row.className = "checkrow";
+    cfgs.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = `${c.label} (${money(c.price[state.currency]||0)})`;
+      sel.appendChild(opt);
+    });
+
+    sel.value = state.configId;
+    sel.onchange = (e) => { state.configId = e.target.value; renderSummary(); };
+
+    cfgBox.appendChild(sel);
+    panel.appendChild(cfgBox);
+
+    const extras = getExtras();
+    const exBox = document.createElement("div");
+    exBox.style.marginTop = "12px";
+    exBox.innerHTML = `<div class="muted" style="margin:8px 0;">Optional extras</div>`;
+
+    extras.forEach(x => {
+      const row = document.createElement("div");
+      row.className = "check";
       row.innerHTML = `
-        <input type="checkbox" data-extra="${it.id}" ${checked ? "checked":""}/>
+        <input type="checkbox" ${state.extras.has(x.id) ? "checked" : ""} />
         <div style="flex:1">
-          <div style="display:flex;justify-content:space-between;gap:12px;">
-            <div><b>${it.label}</b> <small>${it.hint ? it.hint : ""}</small></div>
-            <div class="price">${money(price, state.currency)}</div>
+          <div style="display:flex;justify-content:space-between;gap:10px;">
+            <div>
+              <b>${x.label}</b>
+              <div class="muted">${x.hint || ""}</div>
+            </div>
+            <div class="price">${money(x.price[state.currency]||0)}</div>
           </div>
         </div>
       `;
-      list.appendChild(row);
+      row.querySelector("input").onchange = (e) => {
+        if(e.target.checked) state.extras.add(x.id); else state.extras.delete(x.id);
+        renderSummary();
+      };
+      exBox.appendChild(row);
     });
 
-    box.appendChild(list);
-    wrap.appendChild(box);
-  });
-
-  // checkbox listeners
-  wrap.querySelectorAll('input[type="checkbox"][data-extra]').forEach(cb => {
-    cb.addEventListener("change", (e) => {
-      const key = e.target.getAttribute("data-extra");
-      if (e.target.checked) state.extras.add(key);
-      else state.extras.delete(key);
-      renderSummary(getModelDef(state.category, state.model));
-      syncUrl();
-    });
-  });
-}
-
-function renderSummary(modelDef){
-  const out = qs("summary");
-  out.innerHTML = "";
-
-  const cfg = (modelDef.configs || []).find(c => c.id === state.configId);
-  const base = cfg?.price?.[state.currency] ?? 0;
-
-  const baseLine = document.createElement("div");
-  baseLine.className = "item";
-  baseLine.innerHTML = `
-    <div>
-      <b>${state.model}</b> <small>${state.category}</small>
-      <small>Size: ${state.size} • ${cfg ? cfg.label : ""}</small>
-    </div>
-    <div class="price">${money(base, state.currency)}</div>
-  `;
-  out.appendChild(baseLine);
-
-  // extras
-  let extrasTotal = 0;
-  const groups = getExtrasFor(modelDef, state.category);
-  const extrasById = new Map();
-  groups.forEach(g => g.items.forEach(it => extrasById.set(it.id, it)));
-
-  [...state.extras].forEach(id => {
-    const it = extrasById.get(id);
-    if (!it) return;
-    const p = resolveExtraPrice(it, state.size, state.currency);
-    extrasTotal += p;
-
-    const line = document.createElement("div");
-    line.className = "item";
-    line.innerHTML = `<div><b>${it.label}</b><small>${it.hint || ""}</small></div><div class="price">${money(p, state.currency)}</div>`;
-    out.appendChild(line);
-  });
-
-  const total = base + extrasTotal;
-  qs("total").textContent = money(total, state.currency);
-}
-
-function syncUrl(){
-  const params = new URLSearchParams();
-  params.set("cur", state.currency);
-  params.set("c", state.category);
-  params.set("m", state.model);
-  params.set("s", state.size);
-  params.set("cfg", state.configId || "");
-  if (state.extras.size) params.set("x", [...state.extras].join(","));
-  const newUrl = `${location.pathname}?${params.toString()}`;
-  history.replaceState(null, "", newUrl);
-}
-
-function loadFromUrl(){
-  const p = new URLSearchParams(location.search);
-  const cur = p.get("cur"); if (cur === "EUR" || cur === "USD") state.currency = cur;
-
-  const c = p.get("c"); if (c && DATA.categories[c]) state.category = c;
-
-  const m = p.get("m"); if (m) state.model = m;
-
-  const s = p.get("s"); if (s) state.size = s;
-
-  const cfg = p.get("cfg"); if (cfg) state.configId = cfg;
-
-  const x = p.get("x");
-  state.extras = new Set();
-  if (x){
-    x.split(",").map(v => v.trim()).filter(Boolean).forEach(v => state.extras.add(v));
+    panel.appendChild(exBox);
+    return;
   }
 }
 
-qs("currency").addEventListener("change", (e) => {
+function renderSummary(){
+  $("units").textContent = `Units: ${units()}`;
+
+  const s = $("summary");
+  const { base, total } = calcTotal();
+
+  const catName = DATA.categories.find(x=>x.key===state.category)?.name || "—";
+  const model = state.model || "—";
+
+  const sizeObj = getSizesForModel(state.model).find(x=>x.key===state.size) || null;
+  const sizeText = sizeObj ? sizeLabel(sizeObj) : "—";
+
+  const cfg = getConfigsForModel(state.model).find(c => c.id === state.configId);
+  const cfgText = cfg ? cfg.label : "—";
+
+  s.innerHTML = "";
+
+  const l1 = document.createElement("div");
+  l1.className = "line";
+  l1.innerHTML = `<div><b>${model}</b><div class="muted">${catName}</div><div class="muted">Size: ${sizeText}</div><div class="muted">Config: ${cfgText}</div></div><div class="price">${money(base)}</div>`;
+  s.appendChild(l1);
+
+  if(state.extras.size){
+    getExtras().forEach(x => {
+      if(!state.extras.has(x.id)) return;
+      const l = document.createElement("div");
+      l.className = "line";
+      l.innerHTML = `<div><b>${x.label}</b><div class="muted">${x.hint||""}</div></div><div class="price">${money(x.price[state.currency]||0)}</div>`;
+      s.appendChild(l);
+    });
+  } else {
+    const l = document.createElement("div");
+    l.className = "line";
+    l.innerHTML = `<div><b>No extras selected</b><div class="muted">Optional items available in Step 4</div></div><div class="price">${money(0)}</div>`;
+    s.appendChild(l);
+  }
+
+  $("total").textContent = money(total);
+}
+
+function canNext(){
+  if(state.step === 0) return !!state.category;
+  if(state.step === 1) return !!state.model;
+  if(state.step === 2) return !!state.size;
+  if(state.step === 3) return !!state.configId;
+  return true;
+}
+
+$("currency").addEventListener("change", (e) => {
   state.currency = e.target.value;
-  populate();
+  renderPanel();
+  renderSummary();
 });
 
-qs("category").addEventListener("change", (e) => {
-  state.category = e.target.value;
+$("reset").addEventListener("click", () => {
+  state.step = 0;
+  state.category = null;
   state.model = null;
   state.size = null;
   state.configId = null;
   state.extras = new Set();
-  populate();
+  setStep(0);
 });
 
-qs("model").addEventListener("change", (e) => {
-  state.model = e.target.value;
-  state.size = null;
-  state.configId = null;
-  state.extras = new Set();
-  populate();
+$("back").addEventListener("click", () => setStep(state.step - 1));
+
+$("next").addEventListener("click", () => {
+  if(!canNext()) return;
+  setStep(state.step + 1);
 });
 
-qs("size").addEventListener("change", (e) => {
-  state.size = e.target.value;
-  populate();
+window.addEventListener("DOMContentLoaded", () => {
+  $("currency").value = state.currency;
+  setStep(0);
 });
-
-qs("config").addEventListener("change", (e) => {
-  state.configId = e.target.value;
-  populate();
-});
-
-qs("reset").addEventListener("click", () => {
-  location.href = location.pathname; // resets URL & state
-});
-
-qs("copyLink").addEventListener("click", async () => {
-  try{
-    await navigator.clipboard.writeText(location.href);
-    alert("Link copied.");
-  }catch(err){
-    prompt("Copy link:", location.href);
-  }
-});
-
-qs("export").addEventListener("click", () => {
-  const payload = {
-    currency: state.currency,
-    category: state.category,
-    model: state.model,
-    size: state.size,
-    configId: state.configId,
-    extras: [...state.extras]
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "axion-config.json";
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-qs("quote").addEventListener("click", () => {
-  alert("Quote request is a stub in this prototype. Next version will email/store the configuration.");
-});
-
-loadFromUrl();
-populate();
 </script>
 </body>
 </html>
